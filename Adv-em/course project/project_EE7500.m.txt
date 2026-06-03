@@ -1,0 +1,267 @@
+function rf_link_budget_tool()
+
+%% =========================
+% PARAMETER INITIALIZATION
+%% =========================
+params = struct();
+
+params.general.freq_Hz = 437e6;
+params.general.lambda = 3e8 / params.general.freq_Hz;
+
+% Keep DATA RATE constant
+params.general.data_rate_bps = 1e5;
+params.general.bandwidth_Hz = 1e5;
+
+params.general.distance_km = 500;
+
+% TX
+params.tx.power_dBm = 30;
+params.tx.antenna_gain_dBi = 2;
+params.tx.line_loss_dB = 1.0;
+params.tx.connector_loss_dB = 0.5;
+params.tx.filter_loss_dB = 1.0;
+params.tx.inline_loss_dB = 0.5;
+params.tx.mismatch_loss_dB = 0.5;
+params.tx.polarization_loss_dB = 0.5;
+
+% RX
+params.rx.antenna_gain_dBi = 10;
+params.rx.line_loss_dB = 1.0;
+params.rx.connector_loss_dB = 0.5;
+params.rx.filter_loss_dB = 1.0;
+params.rx.inline_loss_dB = 0.5;
+params.rx.mismatch_loss_dB = 0.5;
+params.rx.polarization_loss_dB = 0.5;
+params.rx.beamwidth_deg = 30;
+
+% Channel
+params.channel.atmospheric_loss_dB = 1.0;
+params.channel.ionospheric_loss_dB = 0.5;
+
+% Noise
+params.noise.NF_dB = 3;
+
+% Requirements
+params.req.EbN0_required_dB = 10;
+params.req.impl_loss_dB = 1.5;
+
+%% =========================
+% UI SETUP
+%% =========================
+fig = uifigure('Name','RF Link Budget Tool','Position',[100 100 950 720]);
+
+ax = uiaxes(fig,'Position',[50 380 850 300]);
+title(ax,'SNR vs Distance');
+xlabel(ax,'Distance (km)');
+ylabel(ax,'SNR (dB)');
+grid(ax,'on');
+
+%% =========================
+% SLIDERS (clean layout)
+%% =========================
+y0 = 330;
+dy = 45;
+
+% TX power
+sPt = uislider(fig,'Position',[150 y0 500 3],'Limits',[0 40],'Value',params.tx.power_dBm);
+uilabel(fig,'Position',[50 y0-10 120 20],'Text','Pt (dBm)');
+
+% TX gain
+sGt = uislider(fig,'Position',[150 y0-dy 500 3],'Limits',[0 20],'Value',params.tx.antenna_gain_dBi);
+uilabel(fig,'Position',[50 y0-dy-10 120 20],'Text','Gt (dBi)');
+
+% RX gain
+sGr = uislider(fig,'Position',[150 y0-2*dy 500 3],'Limits',[0 30],'Value',params.rx.antenna_gain_dBi);
+uilabel(fig,'Position',[50 y0-2*dy-10 120 20],'Text','Gr (dBi)');
+
+% Frequency
+sFreq = uislider(fig,'Position',[150 y0-3*dy 500 3],'Limits',[100e6 3e9],'Value',params.general.freq_Hz);
+uilabel(fig,'Position',[50 y0-3*dy-10 120 20],'Text','Freq (Hz)');
+
+% Noise figure
+sNF = uislider(fig,'Position',[150 y0-4*dy 500 3],'Limits',[0 10],'Value',params.noise.NF_dB);
+uilabel(fig,'Position',[50 y0-4*dy-10 120 20],'Text','NF (dB)');
+
+% Distance
+sDist = uislider(fig,'Position',[150 y0-5*dy 500 3],'Limits',[100 5000],'Value',params.general.distance_km);
+uilabel(fig,'Position',[50 y0-5*dy-10 140 20],'Text','Distance (km)');
+
+% 🔥 Pointing angle
+sTheta = uislider(fig,'Position',[150 y0-6*dy 500 3],'Limits',[0 20],'Value',0);
+uilabel(fig,'Position',[50 y0-6*dy-10 160 20],'Text','Pointing angle θ (deg)');
+
+%% Modulation dropdown
+modDropdown = uidropdown(fig,...
+    'Items',{'BPSK','QPSK','8PSK','16QAM'},...
+    'Position',[700 260 150 25],...
+    'Value','BPSK');
+uilabel(fig,'Position',[700 280 150 20],'Text','Modulation');
+
+%% Output text (auto positioned)
+txt_y = y0 - 7*dy - 20;
+txt = uilabel(fig,'Position',[50 txt_y 850 40],'Text','');
+
+%% =========================
+% UPDATE FUNCTION
+%% =========================
+function update(~,~)
+
+    % Update parameters
+    params.tx.power_dBm = sPt.Value;
+    params.tx.antenna_gain_dBi = sGt.Value;
+    params.rx.antenna_gain_dBi = sGr.Value;
+
+    params.general.freq_Hz = sFreq.Value;
+    params.general.lambda = 3e8 / params.general.freq_Hz;
+
+    params.noise.NF_dB = sNF.Value;
+    params.general.distance_km = sDist.Value;
+
+    % 🔥 Pointing loss from theta
+    theta = sTheta.Value;
+
+    params.rx.pointing_loss_dB = compute_pointing_loss(theta, params.rx.beamwidth_deg);
+
+    % Modulation handling
+    switch modDropdown.Value
+        case 'BPSK'
+            bits = 1; req = 9.6;
+        case 'QPSK'
+            bits = 2; req = 9.6;
+        case '8PSK'
+            bits = 3; req = 14;
+        case '16QAM'
+            bits = 4; req = 16;
+    end
+
+    params.req.EbN0_required_dB = req;
+
+    % Adjust bandwidth
+    params.general.bandwidth_Hz = params.general.data_rate_bps / bits;
+
+    % Sweep
+    d = linspace(100,5000,300);
+    SNR = zeros(size(d));
+    margin = zeros(size(d));
+
+    for i = 1:length(d)
+        params.general.distance_km = d(i);
+        res = compute_link(params);
+        SNR(i) = res.SNR_dB;
+        margin(i) = res.link_margin_dB;
+    end
+
+    % Link closure
+    idx = find(margin >= 0,1,'last');
+    if isempty(idx)
+        max_range = 0;
+    else
+        max_range = d(idx);
+    end
+
+    % Plot
+    cla(ax);
+    plot(ax,d,SNR,'LineWidth',2);
+    hold(ax,'on');
+
+    % Current point
+    params.general.distance_km = sDist.Value;
+    res = compute_link(params);
+
+    % Color coding
+    if res.link_margin_dB > 3
+        color = [0 0.7 0];
+    elseif res.link_margin_dB > 0
+        color = [1 0.8 0];
+    else
+        color = [0.9 0 0];
+    end
+
+    plot(ax,sDist.Value,res.SNR_dB,'o',...
+        'MarkerSize',9,...
+        'MarkerFaceColor',color,...
+        'MarkerEdgeColor','k');
+
+    if max_range > 0
+        xline(ax,max_range,'--r','LineWidth',1.5);
+    end
+
+    hold(ax,'off');
+
+    % Output text
+    txt.Text = sprintf(['Mod: %s | θ=%.1f° | Pr=%.2f dBm | SNR=%.2f dB | Margin=%.2f dB | Link closes @ %.0f km'], ...
+        modDropdown.Value, theta, ...
+        res.Pr_dBm, res.SNR_dB, res.link_margin_dB, max_range);
+end
+
+%% Callbacks
+sPt.ValueChangedFcn = @update;
+sGt.ValueChangedFcn = @update;
+sGr.ValueChangedFcn = @update;
+sFreq.ValueChangedFcn = @update;
+sNF.ValueChangedFcn = @update;
+sDist.ValueChangedFcn = @update;
+sTheta.ValueChangedFcn = @update;
+modDropdown.ValueChangedFcn = @update;
+
+update();
+
+%% =========================
+% HELPER FUNCTIONS
+%% =========================
+
+function Lp = compute_pointing_loss(theta, beamwidth)
+    Lp = 12 * (theta / beamwidth)^2;
+end
+
+function Ltx = compute_tx_loss(p)
+    Ltx = p.tx.line_loss_dB + p.tx.connector_loss_dB + ...
+          p.tx.filter_loss_dB + p.tx.inline_loss_dB + ...
+          p.tx.mismatch_loss_dB + ...
+          p.tx.polarization_loss_dB;
+end
+
+function Lrx = compute_rx_loss(p)
+    Lrx = p.rx.line_loss_dB + p.rx.connector_loss_dB + ...
+          p.rx.filter_loss_dB + p.rx.inline_loss_dB + ...
+          p.rx.mismatch_loss_dB + p.rx.pointing_loss_dB + ...
+          p.rx.polarization_loss_dB;
+end
+
+function Lch = compute_channel_loss(p)
+    d = p.general.distance_km;
+    f = p.general.freq_Hz / 1e6;
+    FSPL = 20*log10(d) + 20*log10(f) + 32.44;
+
+    Lch = FSPL + p.channel.atmospheric_loss_dB + ...
+          p.channel.ionospheric_loss_dB;
+end
+
+function N_dBm = compute_noise(p)
+    B_noise = 1.2 * p.general.data_rate_bps;
+    N_dBm = -174 + 10*log10(B_noise) + p.noise.NF_dB;
+end
+
+function results = compute_link(p)
+
+    Ltx = compute_tx_loss(p);
+    Lrx = compute_rx_loss(p);
+    Lch = compute_channel_loss(p);
+
+    Pr = p.tx.power_dBm + p.tx.antenna_gain_dBi + p.rx.antenna_gain_dBi ...
+         - (Ltx + Lch + Lrx);
+
+    N = compute_noise(p);
+    SNR = Pr - N;
+
+    EbN0 = SNR;
+
+    margin = EbN0 - (p.req.EbN0_required_dB + p.req.impl_loss_dB);
+
+    results.Pr_dBm = Pr;
+    results.SNR_dB = SNR;
+    results.EbN0_dB = EbN0;
+    results.link_margin_dB = margin;
+end
+
+end
