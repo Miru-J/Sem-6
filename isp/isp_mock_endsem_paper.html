@@ -1,0 +1,394 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+  .paper { max-width: 680px; padding: 0 0 2rem; }
+  .header { border-bottom: 2px solid var(--color-text-primary); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+  .uni { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); letter-spacing: 0.08em; text-transform: uppercase; }
+  .course-title { font-size: 22px; font-weight: 500; color: var(--color-text-primary); margin: 4px 0 2px; }
+  .meta-row { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 10px; }
+  .meta-item { font-size: 13px; color: var(--color-text-secondary); }
+  .meta-item strong { color: var(--color-text-primary); font-weight: 500; }
+  .instructions { background: var(--color-background-secondary); border-left: 3px solid var(--color-text-primary); padding: 0.75rem 1rem; margin-bottom: 1.5rem; border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; }
+  .instructions p { font-size: 13px; color: var(--color-text-secondary); line-height: 1.7; }
+  .instructions p + p { margin-top: 4px; }
+  .section-header { background: var(--color-text-primary); color: var(--color-background-primary); padding: 6px 14px; font-size: 13px; font-weight: 500; margin: 2rem 0 1rem; border-radius: var(--border-radius-md); display: flex; justify-content: space-between; }
+  .question { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1rem; background: var(--color-background-primary); transition: border-color 0.15s; }
+  .question:hover { border-color: var(--color-border-primary); }
+  .q-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 0.75rem; }
+  .q-num { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); white-space: nowrap; }
+  .marks-badge { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 2px 10px; font-size: 12px; font-weight: 500; color: var(--color-text-primary); white-space: nowrap; flex-shrink: 0; }
+  .q-text { font-size: 14px; color: var(--color-text-primary); line-height: 1.7; }
+  .q-text .topic-tag { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); background: var(--color-background-secondary); border-radius: 20px; padding: 1px 8px; margin-left: 6px; display: inline-block; vertical-align: middle; }
+  .sub-parts { margin-top: 0.75rem; }
+  .sub-part { font-size: 13px; color: var(--color-text-primary); line-height: 1.7; padding: 4px 0 4px 1rem; border-left: 2px solid var(--color-border-tertiary); margin: 4px 0; }
+  .sub-part .sp-label { font-weight: 500; color: var(--color-text-secondary); margin-right: 6px; }
+  .hint-toggle { margin-top: 0.75rem; }
+  .hint-btn { font-size: 12px; color: var(--color-text-secondary); background: none; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 3px 10px; cursor: pointer; }
+  .hint-btn:hover { background: var(--color-background-secondary); }
+  .hint-box { margin-top: 8px; font-size: 12px; color: var(--color-text-secondary); background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 8px 12px; line-height: 1.6; display: none; }
+  .math { font-family: var(--font-mono); font-size: 13px; background: var(--color-background-secondary); padding: 8px 12px; border-radius: var(--border-radius-md); margin: 8px 0; overflow-x: auto; display: block; }
+  .figure-box { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 12px; margin: 8px 0; font-size: 12px; color: var(--color-text-secondary); text-align: center; font-style: italic; background: var(--color-background-secondary); }
+  .marks-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 1.5rem 0 0; }
+  .ms-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 0.75rem 1rem; text-align: center; }
+  .ms-num { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  .ms-label { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+  .divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 1.5rem 0; }
+  .ask-btn { width: 100%; margin-top: 1.5rem; padding: 10px; font-size: 13px; border-radius: var(--border-radius-md); cursor: pointer; background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); color: var(--color-text-primary); }
+  .ask-btn:hover { background: var(--color-background-secondary); }
+</style>
+
+<div class="paper">
+  <div class="header">
+    <div class="uni">Department of Electrical Engineering &nbsp;|&nbsp; End Semester Examination</div>
+    <div class="course-title">Image Signal Processing</div>
+    <div class="meta-row">
+      <div class="meta-item"><strong>Duration:</strong> 3 Hours</div>
+      <div class="meta-item"><strong>Maximum Marks:</strong> 100</div>
+      <div class="meta-item"><strong>Date:</strong> May 2026</div>
+      <div class="meta-item"><strong>Closed Book</strong></div>
+    </div>
+  </div>
+
+  <div class="instructions">
+    <p>1. Answer <strong>ALL</strong> questions in Section A (short answer). Answer any <strong>FOUR</strong> of six questions in Section B (medium). Answer any <strong>THREE</strong> of five questions in Section C (long answer).</p>
+    <p>2. Clearly state all assumptions. Partial credit is awarded for correct methodology.</p>
+    <p>3. Useful relations may be derived from first principles — no formula sheets provided.</p>
+    <p>4. Click <em>Show hint</em> on any question to reveal a conceptual nudge.</p>
+  </div>
+
+  <div class="marks-summary">
+    <div class="ms-card"><div class="ms-num">30</div><div class="ms-label">Section A (6 × 5)</div></div>
+    <div class="ms-card"><div class="ms-num">40</div><div class="ms-label">Section B (4 × 10)</div></div>
+    <div class="ms-card"><div class="ms-num">30</div><div class="ms-label">Section C (3 × 10)</div></div>
+  </div>
+
+  <!-- SECTION A -->
+  <div class="section-header"><span>Section A — Short Answer</span><span>6 × 5 = 30 marks</span></div>
+  <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:1rem;">Answer ALL six questions. Each carries 5 marks.</p>
+
+  <div class="question">
+    <div class="q-top">
+      <div class="q-num">Q1 <span class="topic-tag">Camera Models</span></div>
+      <div class="marks-badge">[5]</div>
+    </div>
+    <div class="q-text">
+      A pinhole camera has focal length f = 50 mm. A 3D point P = (200, 150, 1000) mm (in camera coordinates) is projected onto the image plane.
+      <div class="sub-parts">
+        <div class="sub-part"><span class="sp-label">(a)</span> Using the perspective projection equations, find the image coordinates (x′, y′).</div>
+        <div class="sub-part"><span class="sp-label">(b)</span> Write the full 3×4 projection matrix P = K[R | t] assuming R = I and t = 0, with principal point (cx, cy) = (320, 240) and pixel pitch 0.01 mm/pixel.</div>
+        <div class="sub-part"><span class="sp-label">(c)</span> What is the role of homogeneous coordinates in this formulation?</div>
+      </div>
+    </div>
+    <div class="hint-toggle"><button class="hint-btn" onclick="toggleHint(this)">Show hint</button><div class="hint-box">x′ = f·X/Z, y′ = f·Y/Z. The intrinsic matrix K encodes focal length and principal point. Homogeneous coordinates allow projection (a non-linear operation) to be expressed as a linear matrix multiply.</div></div>
+  </div>
+
+  <div class="question">
+    <div class="q-top">
+      <div class="q-num">Q2 <span class="topic-tag">Transforms</span></div>
+      <div class="marks-badge">[5]</div>
+    </div>
+    <div class="q-text">
+      State whether each of the following is TRUE or FALSE. Justify each answer in one or two sentences.
+      <div class="sub-parts">
+        <div class="sub-part"><span class="sp-label">(a)</span> The DFT of a real-valued image always has conjugate symmetry: F(u,v) = F*(−u,−v).</div>
+        <div class="sub-part"><span class="sp-label">(b)</span> A 2D DFT can be computed as two successive 1D DFTs (separability).</div>
+        <div class="sub-part"><span class="sp-label">(c)</span> Energy compaction in the DCT means most signal energy is concentrated in high-frequency coefficients.</div>
+        <div class="sub-part"><span class="sp-label">(d)</span> The Walsh-Hadamard Transform requires no multiplications, only additions and subtractions.</div>
+        <div class="sub-part"><span class="sp-label">(e)</span> The PCA transform basis depends on the specific dataset, unlike the DCT.</div>
+      </div>
+    </div>
+    <div class="hint-toggle"><button class="hint-btn" onclick="toggleHint(this)">Show hint</button><div class="hint-box">(a) T — follows from the DFT definition when f is real. (b) T — 2D DFT is separable in x and y. (c) F — energy concentrates in LOW frequencies. (d) T — WHT uses ±1 only. (e) T — KLT/PCA adapts to data covariance; DCT is data-independent.</div></div>
+  </div>
+
+  <div class="question">
+    <div class="q-top">
+      <div class="q-num">Q3 <span class="topic-tag">Filtering & Enhancement</span></div>
+      <div class="marks-badge">[5]</div>
+    </div>
+    <div class="q-text">
+      An image has intensity values {10, 10, 12, 200, 11, 9, 10} in a 1×7 neighborhood.
+      <div class="sub-parts">
+        <div class="sub-part"><span class="sp-label">(a)</span> Compute the output of a 3×1 mean filter at the center pixel (index 3, value 200).</div>
+        <div class="sub-part"><span class="sp-label">(b)</span> Compute the output of a 3×1 median filter at the same location.</div>
+        <div class="sub-part"><span class="sp-label">(c)</span> Which filter preserves edges better and why? Relate your answer to the frequency domain characteristics of the mean filter.</div>
+      </div>
+    </div>
+    <div class="hint-toggle"><button class="hint-btn" onclick="toggleHint(this)">Show hint</button><div class="hint-box">Mean filter kernel: [1/3, 1/3, 1/3] — acts as low-pass, blurs edges. Median is non-linear and preserves step edges while suppressing impulse noise. Sort the 3-element window for median.</div></div>
+  </div>
+
+  <div class="question">
+    <div class="q-top">
+      <div class="q-num">Q4 <span class="topic-tag">Segmentation</span></div>
+      <div class="marks-badge">[5]</div>
+    </div>
+    <div class="q-text">
+      Consider an image with two classes of pixels. Class 1 (background) has mean μ₁ = 50 and variance σ₁² = 100 with 70% of pixels. Class 2 (foreground) has mean μ₂ = 180 and variance σ₂² = 144 with 30% of pixels.
+      <div class="sub-parts">
+        <div class="sub-part"><span class="sp-label">(a)</span> Compute the within-class variance σ²_W.</div>
+        <div class="sub-part"><span class="sp-label">(b)</span> Compute the between-class variance σ²_B.</div>
+        <div class="sub-part"><span class="sp-label">(c)</span> State Otsu's theorem relating σ²_W and σ²_B to total variance σ²_T. Which quantity does Otsu's method maximise?</div>
+      </div>
+    </div>
+    <div class="hint-toggle"><button class="hint-btn" onclick="toggleHint(this)">Show hint</button><div class="hint-box">σ²_W = ω₁σ₁² + ω₂σ₂². σ²_B = ω₁ω₂(μ₁−μ₂)². Otsu: σ²_T = σ²_W + σ²_B is constant, so minimising σ²_W ≡ maximising σ²_B.</div></div>
+  </div>
+
+  <div class="question">
+    <div class="q-top">
+      <div class="q-num">Q5 <span class="topic-tag">Image Formation</span></div>
+      <div class="marks-badge">[5]</div>
+    </div>
+    <div class="q-text">
+      An image of size 512×512 has spatial resolution 96 dpi. Its 2D DFT shows a dominant peak at (u, v) = (±64, ±0) (after centring).
+      <div class="sub-parts">
+        <div class="sub-part"><span class="sp-label">(a)</span> Determine the spatial frequency of the pattern in cycles/cm.</div>
+        <div class="sub-part"><span class="sp-label">(b)</span> Determine the orientation of the sinusoidal pattern in the image domain.</div>
+        <div class="sub-part"><span class="sp-label">(c)</span> Bilinear interpolation is used when zooming this image by 1.5×. Describe how the output pixel at non-integer location (1.5, 2.5) is computed from the four surrounding input pixels.</div>
+      </div>
+    </div>
+    <div class="hint-toggle"><button class="hint-btn" onclick="toggleHint(this)">Show hint</button><div class="hint-box">Frequency in cycles/pixel = u/N. Convert to cycles/cm using dpi→dpcm (1 inch = 2.54 cm). Peak at (64,0) → horizontal stripes, orientation 0°. Bilinear: weighted average of 4 neighbours using fractional distances.</div></div>
+  </div>
+
+  <div class="question">
+    <div class="q-top">
+      <div class="q-num">Q6 <span class="topic-tag">Estimation Theory</span></div>
+      <div class="marks-badge">[5]</div>
+    </div>
+    <div class="q-text">
+      For the observation model <span class="math">g = Hf + η</span> where η ~ N(0, R_n) and f ~ N(0, R_f):
+      <div class="sub-parts">
+        <div class="sub-part"><span class="sp-label">(a)</span> State the MMSE (Wiener filter) estimator for f given g.</div>
+        <div class="sub-part"><span class="sp-label">(b)</span> What simplification occurs in the frequency domain when H, R_f, and R_n are all circulant (diagonalised by the DFT)?</div>
+        <div class="sub-part"><span class="sp-label">(c)</span> What does the Wiener filter do in frequency bands where the signal-to-noise ratio (SNR) is very high? Very low?</div>
+      </div>
+    </div>
+    <div class="hint-toggle"><button class="hint-btn" onclick="toggleHint(this)">Show hint</button><div class="hint-box">MMSE: Ĥ = R_f H^T (H R_f H^T + R_n)^{-1}. In freq domain: Ŵ(u,v) = S_f H* / (|H|²S_f + S_n). High SNR → behaves like inverse filter. Low SNR → suppresses that frequency.</div></div>
+  </div>
+
+  <!-- SECTION B -->
+  <div class="section-header"><span>Section B — Medium Answer (Answer any 4 of 6)</span><span>4 × 10 = 40 marks</span></div>
+  <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:1rem;">Answer any FOUR of the following six questions. Each carries 10 marks.</p>
+
+  <div class="question">
+    <div class="q-top">
+      <div class="q-num">Q7 <span class="topic-tag">SVD & Rank</span></div>
+      <div class="marks-badge">[10]</div>
+    </div>
+    <div class="q-text">
+      Consider the system Ax = b where:
+      <span class="math">A = [1 2; 0.5 1; 2 4]&nbsp;&nbsp;&nbsp;b = [2; 1; 4]</span>
+      <div class="sub-parts">
+        <div class="sub-part"><span class="sp-label">(a)</span> Determine the rank of A. Justify using row reduction. [2]</div>
+        <div class="sub-part"><span class="sp-label">(b)</span> Does a solution x exist? Is it unique? Explain using the column space of A. [2]</div>
+        <div class="sub-part"><span class="sp-label">(c)</span> Compute the pseudoinverse solution x̂ = A†b using the formula A† = (A^T A)^{-1} A^T (if applicable) or justify why this form cannot be used. [4]</div>
+        <div class="sub-part"><span class="sp-label">(d)</span> Is Ax̂ − b = 0? What is the geometric interpretation of the residual? [2]</div>
+      </div>
+    </div>
+    <div class="hint-toggle"><button class="hint-btn" onclick="toggleHint(this)">Show hint</button><div class="hint-box">Row 3 = 2×Row 1, so rank(A) = 1. With rank-1 A and 2 unknowns, the system is underdetermined — infinitely many solutions exist if b is in col(A). Minimum-norm solution via pseudoinverse. Residual = projection of b onto null(A^T).</div></div>
+  </div>
+
+  <div class="question">
+    <div class="q-top">
+      <div class="q-num">Q8 <span class="topic-tag">Histogram & Enhancement</span></div>
+      <div class="marks-badge">[10]</div>
+    </div>
+    <div class="q-text">
+      An 8-level (3-bit) image has the following intensity histogram: {r₀=0: 10, r₁=1: 8, r₂=2: 15, r₃=3: 20, r₄=4: 12, r₅=5: 8, r₆=6: 5, r₇=7: 2}. Total pixels N = 80.
+      <div class="sub-parts">
+        <div class="sub-part"><span class="sp-label">(a)</span> Compute the probability mass function pᵣ(rₖ) for each level. [1]</div>
+        <div class="sub-part"><span class="sp-label">(b)</span> Compute the cumulative distribution function (CDF) Tₖ = Σpᵣ(rⱼ) for j ≤ k. [2]</div>
+        <div class="sub-part"><span class="sp-label">(c)</span> Apply histogram equalisation: sₖ = round[(L−1)·Tₖ] where L=8. Construct the mapping table and output histogram. [4]</div>
+        <div class="sub-part"><span class="sp-label">(d)</span> Now suppose you want to match this image's histogram to a target uniform distribution. Describe the two-step procedure (equalise both, then invert). [3]</div>
+      </div>
+    </div>
+    <div class="hint-toggle"><button class="hint-btn" onclick="toggleHint(this)">Show hint</button><div class="hint-box">CDF maps cumulative probability to output levels. Histogram equalisation spreads intensity values to flatten the output histogram. Histogram matching: equalise input → find target CDF → invert target CDF to get mapping.</div></div>
+  </div>
+
+  <div class="question">
+    <div class="q-top">
+      <div class="q-num">Q9 <span class="topic-tag">Blur & Restoration</span></div>
+      <div class="marks-badge">[10]</div>
+    </div>
+    <div class="q-text">
+      A motion-blurred image is modelled as g(x) = f(x) * h(x) + η(x), where h(x) is a 1D motion blur PSF of length L = 5 pixels (uniform: h = [1/5, 1/5, 1/5, 1/5, 1/5]).
+      <div class="sub-parts">
+        <div class="sub-part"><span class="sp-label">(a)</span> Sketch |H(u)| (the magnitude of the DFT of h). At which frequencies does H(u) = 0? [3]</div>
+        <div class="sub-part"><span class="sp-label">(b)</span> Why is naive inverse filtering (dividing by H(u)) problematic at or near these frequencies? [2]</div>
+        <div class="sub-part"><span class="sp-label">(c)</span> Write the Tikhonov-regularised solution in the frequency domain:
+          <span class="math">F̂(u) = H*(u) G(u) / (|H(u)|² + λ)</span>
+          Explain the role of the regularisation parameter λ and how its choice affects the restoration quality. [3]</div>
+        <div class="sub-part"><span class="sp-label">(d)</span> State the Hadamard conditions for a well-posed problem. Is blind deconvolution (unknown h) well-posed? [2]</div>
+      </div>
+    </div>
+    <div class="hint-toggle"><button class="hint-btn" onclick="toggleHint(this)">Show hint</button><div class="hint-box">H(u) = (1/L)·sin(πuL/N)/sin(πu/N). Zeros at multiples of N/L. Inverse filter amplifies noise at zeros. λ trades off fidelity vs. smoothness. Hadamard: existence, uniqueness, stability — blind deconvolution violates uniqueness.</div></div>
+  </div>
+
+  <div class="question">
+    <div class="q-top">
+      <div class="q-num">Q10 <span class="topic-tag">Transformations & Homography</span></div>
+      <div class="marks-badge">[10]</div>
+    </div>
+    <div class="q-text">
+      Four point correspondences between two views of a planar scene are given (in pixels):
+      <span class="math">p₁=(0,0)↔p₁′=(10,5) &nbsp; p₂=(100,0)↔p₂′=(115,8) &nbsp; p₃=(0,80)↔p₃′=(8,88) &nbsp; p₄=(100,80)↔p₄′=(120,95)</span>
+      <div class="sub-parts">
+        <div class="sub-part"><span class="sp-label">(a)</span> How many degrees of freedom does a planar homography H (3×3) have? Justify. [2]</div>
+        <div class="sub-part"><span class="sp-label">(b)</span> Each point correspondence contributes two equations. Set up the 8×9 linear system for estimating H using the DLT (Direct Linear Transform). [4]</div>
+        <div class="sub-part"><span class="sp-label">(c)</span> Why is RANSAC used in practice when estimating H from many correspondences, and what does it estimate alongside H? [2]</div>
+        <div class="sub-part"><span class="sp-label">(d)</span> How does a projective transformation differ from an affine transformation? Give the constraint that makes a projective transform affine. [2]</div>
+      </div>
+    </div>
+    <div class="hint-toggle"><button class="hint-btn" onclick="toggleHint(this)">Show hint</button><div class="hint-box">H has 8 DOF (9 entries, scale-invariant). DLT: from x′×Hx=0, each correspondence gives 2 independent equations. RANSAC: robustly estimates H and the inlier set. Affine: last row = [0, 0, 1], no perspective distortion.</div></div>
+  </div>
+
+  <div class="question">
+    <div class="q-top">
+      <div class="q-num">Q11 <span class="topic-tag">Probability & Estimation</span></div>
+      <div class="marks-badge">[10]</div>
+    </div>
+    <div class="q-text">
+      Let X and Y be jointly distributed with joint PDF:
+      <span class="math">f_{X,Y}(x,y) = 2e^{−x−y},&nbsp; 0 ≤ y ≤ x &lt; ∞</span>
+      <div class="sub-parts">
+        <div class="sub-part"><span class="sp-label">(a)</span> Find the marginal PDF f_X(x). [2]</div>
+        <div class="sub-part"><span class="sp-label">(b)</span> Find the conditional PDF f_{Y|X}(y|x). [2]</div>
+        <div class="sub-part"><span class="sp-label">(c)</span> Compute E[Y|X = x]. [2]</div>
+        <div class="sub-part"><span class="sp-label">(d)</span> In the context of MMSE estimation, explain what E[Y|X] represents and why it minimises the mean squared error E[(Y − g(X))²] over all functions g. [4]</div>
+      </div>
+    </div>
+    <div class="hint-toggle"><button class="hint-btn" onclick="toggleHint(this)">Show hint</button><div class="hint-box">f_X(x) = ∫₀ˣ 2e^{−x−y} dy = 2e^{−x}(1−e^{−x}). Conditional: f_{Y|X} = f_{XY}/f_X. E[Y|X=x] = ∫y·f_{Y|X}dy. The MMSE estimator is the conditional expectation — this follows from the orthogonality principle.</div></div>
+  </div>
+
+  <div class="question">
+    <div class="q-top">
+      <div class="q-num">Q12 <span class="topic-tag">Spatial Filtering</span></div>
+      <div class="marks-badge">[10]</div>
+    </div>
+    <div class="q-text">
+      You need to locally threshold an image f(m,n) to isolate pixels significantly brighter than their surroundings, producing:
+      <span class="math">g(m,n) = 1 if f(m,n) &gt; local_mean(f(m,n)) + T, else 0</span>
+      where the local mean is averaged over a 5×5 region.
+      <div class="sub-parts">
+        <div class="sub-part"><span class="sp-label">(a)</span> Write the 5×5 averaging kernel h that computes the local mean via convolution. [1]</div>
+        <div class="sub-part"><span class="sp-label">(b)</span> Show that computing f(m,n) − (f*h)(m,n) isolates the "local deviation" from the mean. Rewrite g(m,n) in terms of a single thresholding step on this deviation image. [3]</div>
+        <div class="sub-part"><span class="sp-label">(c)</span> This is a form of unsharp masking. Compare it with standard unsharp masking used in image enhancement. What is common? What differs? [3]</div>
+        <div class="sub-part"><span class="sp-label">(d)</span> What is the effect of increasing T on the resulting binary image g? What happens at T→0 and T→∞? [3]</div>
+      </div>
+    </div>
+    <div class="hint-toggle"><button class="hint-btn" onclick="toggleHint(this)">Show hint</button><div class="hint-box">h = (1/25)·ones(5,5). Deviation: d(m,n) = f(m,n) − (f*h)(m,n). g(m,n) = 1 iff d(m,n) > T. Unsharp masking: enhanced = f + α·(f − blurred). T→0: almost all pixels = 1. T→∞: no pixels = 1.</div></div>
+  </div>
+
+  <!-- SECTION C -->
+  <div class="section-header"><span>Section C — Long Answer (Answer any 3 of 5)</span><span>3 × 10 = 30 marks</span></div>
+  <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:1rem;">Answer any THREE of the following five questions. Each carries 10 marks.</p>
+
+  <div class="question">
+    <div class="q-top">
+      <div class="q-num">Q13 <span class="topic-tag">MMSE = MAP Equivalence</span></div>
+      <div class="marks-badge">[10]</div>
+    </div>
+    <div class="q-text">
+      For the blurring model g = Hf + η, the MMSE estimator is:
+      <span class="math">Ĥ_MMSE = R_f H^T (H R_f H^T + R_n)^{-1}</span>
+      and the MAP estimator is:
+      <span class="math">Ĥ_MAP = (H^T R_n^{-1} H + R_f^{-1})^{-1} H^T R_n^{-1}</span>
+      <div class="sub-parts">
+        <div class="sub-part"><span class="sp-label">(a)</span> State the matrix inversion lemma (Woodbury identity): (A + UCV)^{-1} = ... and identify A, U, C, V for this problem. [3]</div>
+        <div class="sub-part"><span class="sp-label">(b)</span> Apply the lemma to show algebraically that Ĥ_MMSE = Ĥ_MAP. [5]</div>
+        <div class="sub-part"><span class="sp-label">(c)</span> Without algebra, justify in words why the MMSE and MAP estimators must be identical for Gaussian signal and noise models. [2]</div>
+      </div>
+    </div>
+    <div class="hint-toggle"><button class="hint-btn" onclick="toggleHint(this)">Show hint</button><div class="hint-box">Woodbury: (A + UCV)^{-1} = A^{-1} − A^{-1}U(C^{-1}+VA^{-1}U)^{-1}VA^{-1}. Set A = R_f^{-1}, U=H^T, C=R_n^{-1}, V=H. For Gaussians, the posterior is Gaussian: mean = mode → MMSE = MAP.</div></div>
+  </div>
+
+  <div class="question">
+    <div class="q-top">
+      <div class="q-num">Q14 <span class="topic-tag">K-means & ISODATA</span></div>
+      <div class="marks-badge">[10]</div>
+    </div>
+    <div class="q-text">
+      Consider an image with pixel intensities (1D for simplicity): {2, 3, 5, 8, 9, 15, 16, 17, 50, 52}. Apply K-means with K=3, initial cluster centres c₁=3, c₂=9, c₃=50.
+      <div class="sub-parts">
+        <div class="sub-part"><span class="sp-label">(a)</span> Perform two full iterations of K-means. Show assignment step and update step for each. [5]</div>
+        <div class="sub-part"><span class="sp-label">(b)</span> Does K-means converge in this case? State the convergence criterion. [1]</div>
+        <div class="sub-part"><span class="sp-label">(c)</span> K-means in image segmentation clusters pixels by intensity only. Is this spatially aware? Give a counter-example where K-means fails to separate two visually distinct regions with similar intensities. [2]</div>
+        <div class="sub-part"><span class="sp-label">(d)</span> ISODATA extends K-means with split and merge operations. Describe one condition under which ISODATA would split a cluster and one condition under which it would merge two clusters. [2]</div>
+      </div>
+    </div>
+    <div class="hint-toggle"><button class="hint-btn" onclick="toggleHint(this)">Show hint</button><div class="hint-box">Assign each point to nearest centre. Update centre = mean of assigned points. Convergence: centres don't change. K-means is not spatially aware — it ignores pixel location. ISODATA splits when σ within cluster > threshold; merges when inter-cluster distance < threshold.</div></div>
+  </div>
+
+  <div class="question">
+    <div class="q-top">
+      <div class="q-num">Q15 <span class="topic-tag">PCA / KLT & SVD</span></div>
+      <div class="marks-badge">[10]</div>
+    </div>
+    <div class="q-text">
+      You are given an image dataset represented as a data matrix X ∈ ℝ^{n×d} (n images, d pixels each), zero-meaned.
+      <div class="sub-parts">
+        <div class="sub-part"><span class="sp-label">(a)</span> Define the covariance matrix C. How does SVD of X relate to the eigendecomposition of C? [3]</div>
+        <div class="sub-part"><span class="sp-label">(b)</span> If X = UΣV^T is the SVD, identify which matrix contains the principal components (eigenvectors of C) and what the singular values represent. [2]</div>
+        <div class="sub-part"><span class="sp-label">(c)</span> Rank-k approximation: Ẑ = U_k Σ_k V_k^T. Show that this minimises the Frobenius norm ‖X − Ẑ‖_F over all rank-k matrices. State the theorem used. [3]</div>
+        <div class="sub-part"><span class="sp-label">(d)</span> Compare PCA/KLT with the DCT as image compression transforms: data-dependence, optimality, and computational cost. [2]</div>
+      </div>
+    </div>
+    <div class="hint-toggle"><button class="hint-btn" onclick="toggleHint(this)">Show hint</button><div class="hint-box">C = X^T X / (n−1). Eigenvectors of C = columns of V (right singular vectors). Singular values squared are proportional to eigenvalues. Eckart-Young theorem: best rank-k approx uses top-k singular values. KLT is optimal but data-dependent; DCT is a fixed approx to KLT for Markov-1 processes.</div></div>
+  </div>
+
+  <div class="question">
+    <div class="q-top">
+      <div class="q-num">Q16 <span class="topic-tag">Depth from Focus & PSF</span></div>
+      <div class="marks-badge">[10]</div>
+    </div>
+    <div class="q-text">
+      A camera uses depth-from-focus to estimate scene depth. The focus measure is based on the Modified Laplacian:
+      <span class="math">ML(m,n) = |2f(m,n) − f(m−1,n) − f(m+1,n)| + |2f(m,n) − f(m,n−1) − f(m,n+1)|</span>
+      <div class="sub-parts">
+        <div class="sub-part"><span class="sp-label">(a)</span> Show that the 1D operator (2, −1, −1 centred at current pixel) approximates the second derivative. What frequency content does it emphasise? [2]</div>
+        <div class="sub-part"><span class="sp-label">(b)</span> Images are acquired at three focus settings (z₁ &lt; z₂ &lt; z₃). Describe the depth-from-focus algorithm to assign a depth estimate to each pixel. [3]</div>
+        <div class="sub-part"><span class="sp-label">(c)</span> The blur PSF for a defocused lens can be modelled as a disk of radius r. Write the PSF h(x,y) and compute its Fourier transform. How does the PSF change with increasing defocus? [3]</div>
+        <div class="sub-part"><span class="sp-label">(d)</span> Distinguish between space-invariant and space-variant blur. Under what imaging condition does space-variant blur arise? [2]</div>
+      </div>
+    </div>
+    <div class="hint-toggle"><button class="hint-btn" onclick="toggleHint(this)">Show hint</button><div class="hint-box">Second derivative amplifies high frequencies. Depth-from-focus: compute ML at each focus position; depth = z at max ML. Disk PSF: h = 1/(πr²) inside circle of radius r; its FT is a jinc function. Space-variant: PSF changes with position — occurs with tilt, zoom, off-axis aberrations.</div></div>
+  </div>
+
+  <div class="question">
+    <div class="q-top">
+      <div class="q-num">Q17 <span class="topic-tag">HDR & Noise Models</span></div>
+      <div class="marks-badge">[10]</div>
+    </div>
+    <div class="q-text">
+      High Dynamic Range (HDR) imaging merges multiple exposures of the same scene.
+      <div class="sub-parts">
+        <div class="sub-part"><span class="sp-label">(a)</span> A camera captures the same scene at exposure times t₁=1/500 s and t₂=1/30 s. A pixel reads 40 (out of 255) in the first image and 210 in the second. Assuming a linear camera response, estimate the true scene radiance E (in normalised units) from each exposure and comment on which is more reliable. [3]</div>
+        <div class="sub-part"><span class="sp-label">(b)</span> Salt-and-pepper noise corrupts an image with probability p = 0.1 (5% salt, 5% pepper). A 3×3 median filter is applied. Prove (or argue carefully) that if fewer than half the pixels in the neighbourhood are corrupted, the median filter recovers the correct value. [4]</div>
+        <div class="sub-part"><span class="sp-label">(c)</span> Gaussian noise and salt-and-pepper noise have different statistical properties. Which filter is optimal for each, and why? [3]</div>
+      </div>
+    </div>
+    <div class="hint-toggle"><button class="hint-btn" onclick="toggleHint(this)">Show hint</button><div class="hint-box">E = pixel_value / (exposure_time × gain). Near-saturation values (210/255) are less reliable due to clipping. For median proof: if <50% are noise, >50% are clean — median falls in the clean majority. Gaussian → mean/Wiener. Salt-pepper → median (non-linear, robust to outliers).</div></div>
+  </div>
+
+  <hr class="divider">
+  <div style="font-size:12px;color:var(--color-text-secondary);text-align:center;line-height:1.7;">
+    End of Paper &nbsp;|&nbsp; Total: 100 marks &nbsp;|&nbsp; Good luck!<br>
+    Click "Show hint" on any question for a conceptual nudge. For full worked solutions, ask below.
+  </div>
+
+  <button class="ask-btn" onclick="sendPrompt('Please give me a fully worked solution for Q13 (MMSE = MAP equivalence using the matrix inversion lemma)')">Get worked solution for Q13 (MMSE = MAP) ↗</button>
+  <button class="ask-btn" style="margin-top:8px" onclick="sendPrompt('Walk me through Q7 step by step — SVD, rank, pseudoinverse, and geometric interpretation of the residual')">Get worked solution for Q7 (SVD & Pseudoinverse) ↗</button>
+  <button class="ask-btn" style="margin-top:8px" onclick="sendPrompt('I want to practice: give me 5 rapid-fire 2-mark true/false questions from image signal processing with explanations')">Quick-fire T/F practice round ↗</button>
+</div>
+
+<script>
+function toggleHint(btn) {
+  const box = btn.nextElementSibling;
+  if (box.style.display === 'block') {
+    box.style.display = 'none';
+    btn.textContent = 'Show hint';
+  } else {
+    box.style.display = 'block';
+    btn.textContent = 'Hide hint';
+  }
+}
+</script>

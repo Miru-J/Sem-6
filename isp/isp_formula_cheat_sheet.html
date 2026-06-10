@@ -1,0 +1,321 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+h2.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.sheet{max-width:680px;padding:0 0 1.5rem}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:8px}
+.top-title{font-size:15px;font-weight:500;color:var(--color-text-primary)}
+.top-sub{font-size:12px;color:var(--color-text-secondary)}
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+.ftag{font-size:11px;padding:3px 10px;border-radius:20px;cursor:pointer;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);user-select:none;transition:all 0.15s}
+.ftag.active{background:var(--color-text-primary);color:var(--color-background-primary);border-color:var(--color-text-primary)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:0;overflow:hidden;transition:border-color 0.15s}
+.card:hover{border-color:var(--color-border-secondary)}
+.card-head{padding:8px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:0.5px solid var(--color-border-tertiary)}
+.card-topic{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.06em}
+.card-star{font-size:11px;color:var(--color-text-warning);background:var(--color-background-warning);border-radius:20px;padding:1px 7px;border:0.5px solid var(--color-border-warning)}
+.card-body{padding:10px 12px}
+.formula-name{font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.formula{font-family:var(--font-mono);font-size:11px;color:var(--color-text-primary);background:var(--color-background-secondary);border-radius:6px;padding:5px 8px;margin:3px 0;display:block;line-height:1.6;white-space:pre-wrap;word-break:break-all}
+.note{font-size:11px;color:var(--color-text-secondary);line-height:1.5;margin-top:4px}
+.divider{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:6px 0}
+.hidden{display:none}
+.ask-btn{width:100%;margin-top:1rem;padding:9px;font-size:13px;border-radius:var(--border-radius-md);cursor:pointer;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);color:var(--color-text-primary)}
+.ask-btn:hover{background:var(--color-background-secondary)}
+</style>
+
+<div class="sheet">
+<h2 class="sr-only">Image Signal Processing — one-page formula cheat sheet covering all key equations from Sections A, B and C</h2>
+
+<div class="top-bar">
+  <div>
+    <div class="top-title">ISP formula cheat sheet</div>
+    <div class="top-sub">All sections · filter by topic · starred = highest exam frequency</div>
+  </div>
+</div>
+
+<div class="filter-row">
+  <span class="ftag active" onclick="filter('all',this)">All</span>
+  <span class="ftag" onclick="filter('camera',this)">Camera</span>
+  <span class="ftag" onclick="filter('transforms',this)">Transforms</span>
+  <span class="ftag" onclick="filter('filter',this)">Filtering</span>
+  <span class="ftag" onclick="filter('restore',this)">Restoration</span>
+  <span class="ftag" onclick="filter('seg',this)">Segmentation</span>
+  <span class="ftag" onclick="filter('prob',this)">Probability</span>
+  <span class="ftag" onclick="filter('svd',this)">SVD/Linear</span>
+</div>
+
+<div class="grid" id="grid">
+
+<!-- Camera -->
+<div class="card" data-cat="camera">
+  <div class="card-head"><span class="card-topic">Camera models</span><span class="card-star">★ exam</span></div>
+  <div class="card-body">
+    <div class="formula-name">Perspective projection</div>
+    <span class="formula">x' = f·X/Z,   y' = f·Y/Z</span>
+    <div class="formula-name">Intrinsic matrix K</div>
+    <span class="formula">K = | f_px   0    cx |
+    |  0   f_py  cy |
+    |  0    0    1  |</span>
+    <div class="formula-name">Full projection</div>
+    <span class="formula">p = K [R | t] P_world</span>
+    <div class="note">f_px = f_mm / pixel_pitch. Homogeneous: divide output by w.</div>
+  </div>
+</div>
+
+<!-- Homography -->
+<div class="card" data-cat="camera">
+  <div class="card-head"><span class="card-topic">Homography</span></div>
+  <div class="card-body">
+    <div class="formula-name">DOF and correspondences</div>
+    <span class="formula">H is 3×3, 8 DOF (scale-free)
+Need ≥ 4 point pairs</span>
+    <div class="formula-name">DLT equation per pair</div>
+    <span class="formula">x' × H x = 0
+→ 2 eqns per point → 8×9 system</span>
+    <div class="formula-name">Affine constraint</div>
+    <span class="formula">Last row = [0, 0, 1] → 6 DOF
+Preserves parallelism</span>
+  </div>
+</div>
+
+<!-- DFT -->
+<div class="card" data-cat="transforms">
+  <div class="card-head"><span class="card-topic">DFT / DCT</span><span class="card-star">★ exam</span></div>
+  <div class="card-body">
+    <div class="formula-name">2D DFT forward</div>
+    <span class="formula">F(u,v)= ΣΣ f(m,n) e^{-j2π(um/M+vn/N)}</span>
+    <div class="formula-name">Conjugate symmetry (real f)</div>
+    <span class="formula">F(u,v) = F*(-u,-v)</span>
+    <div class="formula-name">Separability</div>
+    <span class="formula">2D DFT = row-wise 1D DFT,
+then column-wise 1D DFT</span>
+    <div class="formula-name">Freq → cycles/cm</div>
+    <span class="formula">f_cyc/px = u/N
+f_cyc/cm = f_cyc/px × (dpi/2.54)</span>
+  </div>
+</div>
+
+<!-- SVD / PCA -->
+<div class="card" data-cat="svd transforms">
+  <div class="card-head"><span class="card-topic">SVD &amp; PCA / KLT</span><span class="card-star">★ exam</span></div>
+  <div class="card-body">
+    <div class="formula-name">SVD decomposition</div>
+    <span class="formula">X = U Σ Vᵀ
+Cols of V = principal components
+σᵢ² / (n-1) = eigenvalue λᵢ</span>
+    <div class="formula-name">Rank-k approx (Eckart-Young)</div>
+    <span class="formula">X̂ = Uₖ Σₖ Vₖᵀ
+‖X - X̂‖_F² = Σᵢ₌ₖ₊₁ σᵢ²</span>
+    <div class="formula-name">Pseudoinverse (min-norm)</div>
+    <span class="formula">x̂ = proj of x₀ onto row(A)
+x̂ = (x₀ᵀr / ‖r‖²)·r</span>
+  </div>
+</div>
+
+<!-- Wiener / MMSE -->
+<div class="card" data-cat="restore prob">
+  <div class="card-head"><span class="card-topic">Wiener / MMSE filter</span><span class="card-star">★ exam</span></div>
+  <div class="card-body">
+    <div class="formula-name">Spatial domain (MMSE)</div>
+    <span class="formula">Ĥ = R_f Hᵀ(HR_f Hᵀ + R_n)⁻¹</span>
+    <div class="formula-name">Frequency domain</div>
+    <span class="formula">W(u,v) = H*(u,v)·S_f
+        / (|H|²S_f + S_n)</span>
+    <div class="formula-name">SNR limits</div>
+    <span class="formula">High SNR → W ≈ 1/H  (inverse filter)
+Low  SNR → W ≈ 0    (suppress)</span>
+    <div class="note">Model: g = Hf + η, f~N(0,R_f), η~N(0,R_n)</div>
+  </div>
+</div>
+
+<!-- MAP = MMSE -->
+<div class="card" data-cat="restore prob">
+  <div class="card-head"><span class="card-topic">MAP estimator &amp; equivalence</span><span class="card-star">★ exam</span></div>
+  <div class="card-body">
+    <div class="formula-name">MAP estimator</div>
+    <span class="formula">Ĥ_MAP=(HᵀR_n⁻¹H+R_f⁻¹)⁻¹HᵀR_n⁻¹</span>
+    <div class="formula-name">Woodbury identity</div>
+    <span class="formula">(A+UCV)⁻¹ = A⁻¹
+  - A⁻¹U(C⁻¹+VA⁻¹U)⁻¹VA⁻¹</span>
+    <div class="formula-name">Key result</div>
+    <span class="formula">Ĥ_MMSE = Ĥ_MAP  (Gaussian only)
+Because: posterior Gaussian
+→ mean = mode</span>
+  </div>
+</div>
+
+<!-- Tikhonov -->
+<div class="card" data-cat="restore">
+  <div class="card-head"><span class="card-topic">Tikhonov regularisation</span></div>
+  <div class="card-body">
+    <div class="formula-name">Regularised inverse filter</div>
+    <span class="formula">F̂(u) = H*(u)·G(u) / (|H(u)|² + λ)</span>
+    <div class="formula-name">λ role</div>
+    <span class="formula">λ large → smoother, less noise
+λ small → sharper, noisier
+λ_opt = σ²_noise / σ²_signal</span>
+    <div class="formula-name">Motion blur zeros</div>
+    <span class="formula">H = 0 at u = k·N/L, k=±1,±2,...
+L = blur length in pixels</span>
+  </div>
+</div>
+
+<!-- Histogram -->
+<div class="card" data-cat="filter seg">
+  <div class="card-head"><span class="card-topic">Histogram equalisation</span><span class="card-star">★ exam</span></div>
+  <div class="card-body">
+    <div class="formula-name">CDF-based mapping</div>
+    <span class="formula">pᵣ(k) = nₖ / N
+T_k = Σⱼ₌₀ᵏ pᵣ(j)  (CDF)
+sₖ = round[(L-1)·Tₖ]</span>
+    <div class="formula-name">Histogram matching</div>
+    <span class="formula">z = T_target⁻¹(T_input(r))
+Equalise both → invert target</span>
+    <div class="note">L = number of grey levels. Perfect uniformity rarely achieved with discrete images.</div>
+  </div>
+</div>
+
+<!-- Otsu -->
+<div class="card" data-cat="seg">
+  <div class="card-head"><span class="card-topic">Otsu thresholding</span><span class="card-star">★ exam</span></div>
+  <div class="card-body">
+    <div class="formula-name">Within-class variance</div>
+    <span class="formula">σ²_W = ω₁σ₁² + ω₂σ₂²</span>
+    <div class="formula-name">Between-class variance</div>
+    <span class="formula">σ²_B = ω₁ω₂(μ₁ - μ₂)²</span>
+    <div class="formula-name">Key theorem</div>
+    <span class="formula">σ²_T = σ²_W + σ²_B = constant
+∴ min σ²_W ≡ max σ²_B</span>
+    <div class="note">Sweep t, pick threshold maximising σ²_B.</div>
+  </div>
+</div>
+
+<!-- Probability / MMSE -->
+<div class="card" data-cat="prob">
+  <div class="card-head"><span class="card-topic">Conditional expectation &amp; MMSE</span><span class="card-star">★ exam</span></div>
+  <div class="card-body">
+    <div class="formula-name">MMSE estimator</div>
+    <span class="formula">ĝ(X) = E[Y|X]  minimises E[(Y-g(X))²]</span>
+    <div class="formula-name">Decomposition</div>
+    <span class="formula">MSE = E[(Y-E[Y|X])²]
+    + E[(E[Y|X]-g(X))²]
+       ↑ irreducible   ↑ =0 iff g=E[Y|X]</span>
+    <div class="formula-name">Orthogonality principle</div>
+    <span class="formula">E[(Y - Ŷ)·h(X)] = 0
+for all functions h</span>
+  </div>
+</div>
+
+<!-- Filtering -->
+<div class="card" data-cat="filter">
+  <div class="card-head"><span class="card-topic">Spatial filtering</span></div>
+  <div class="card-body">
+    <div class="formula-name">Local threshold (unsharp style)</div>
+    <span class="formula">d(m,n) = f - (f * h)  where h=1/25·ones(5)
+g = 1 iff d(m,n) > T</span>
+    <div class="formula-name">Median — noise condition</div>
+    <span class="formula">If k &lt; N/2 pixels corrupted in window:
+median = true value v  (majority wins)</span>
+    <div class="formula-name">Mean vs median</div>
+    <span class="formula">Mean: linear, low-pass → blurs edges
+Median: non-linear → preserves edges</span>
+  </div>
+</div>
+
+<!-- Focus -->
+<div class="card" data-cat="restore camera">
+  <div class="card-head"><span class="card-topic">Focus measures &amp; PSF</span></div>
+  <div class="card-body">
+    <div class="formula-name">Modified Laplacian</div>
+    <span class="formula">ML = |2f - f(m-1) - f(m+1)|
+   + |2f - f(n-1) - f(n+1)|</span>
+    <div class="formula-name">Frequency response of ML</div>
+    <span class="formula">H(ω) = 4sin²(ω/2)  → high-pass</span>
+    <div class="formula-name">Defocus PSF &amp; FT</div>
+    <span class="formula">h = 1/(πr²) inside disk radius r
+H(ρ) = 2J₁(2πrρ)/(2πrρ)  (jinc)</span>
+    <div class="note">Depth from focus: depth = z at max ML across focus stack.</div>
+  </div>
+</div>
+
+<!-- Bilinear interp -->
+<div class="card" data-cat="camera transforms">
+  <div class="card-head"><span class="card-topic">Bilinear interpolation</span></div>
+  <div class="card-body">
+    <div class="formula-name">At fractional location (Δx, Δy)</div>
+    <span class="formula">f(x+Δx, y+Δy) =
+  (1-Δx)(1-Δy)·Q₁₁
++ (1-Δx)(Δy)  ·Q₁₂
++ (Δx)(1-Δy)  ·Q₂₁
++ (Δx)(Δy)    ·Q₂₂</span>
+    <div class="note">Q's are the 4 integer-coordinate neighbours. Δx=Δy=0.5 → equal-weight average.</div>
+  </div>
+</div>
+
+<!-- HDR -->
+<div class="card" data-cat="restore filter">
+  <div class="card-head"><span class="card-topic">HDR &amp; noise models</span></div>
+  <div class="card-body">
+    <div class="formula-name">Linear camera radiance</div>
+    <span class="formula">E = pixel_value / exposure_time
+Near saturation (p ≈ 255) → unreliable</span>
+    <div class="formula-name">Noise filter matching</div>
+    <span class="formula">Gaussian noise   → mean / Wiener filter
+Salt-and-pepper  → median filter</span>
+    <div class="formula-name">Hadamard conditions</div>
+    <span class="formula">Well-posed: exists + unique + stable
+Tikhonov restores stability (condition 3)</span>
+  </div>
+</div>
+
+<!-- K-means -->
+<div class="card" data-cat="seg">
+  <div class="card-head"><span class="card-topic">K-means &amp; ISODATA</span></div>
+  <div class="card-body">
+    <div class="formula-name">Algorithm</div>
+    <span class="formula">Assign: k*(x) = argminₖ ‖x - cₖ‖
+Update: cₖ = mean of assigned points
+Converge: centres unchanged</span>
+    <div class="formula-name">ISODATA rules</div>
+    <span class="formula">Split if: σ_within > σ_max AND n > 2N_min
+Merge if: ‖cᵢ - cⱼ‖ &lt; d_min</span>
+    <div class="note">K-means = intensity only, spatially blind. Converges to local minimum.</div>
+  </div>
+</div>
+
+<!-- WHT / DCT -->
+<div class="card" data-cat="transforms">
+  <div class="card-head"><span class="card-topic">WHT, DCT &amp; energy</span></div>
+  <div class="card-body">
+    <div class="formula-name">WHT property</div>
+    <span class="formula">Hadamard basis: ±1 only
+→ no multiplications needed</span>
+    <div class="formula-name">DCT energy compaction</div>
+    <span class="formula">Energy packs in LOW frequencies
+(top-left coefficients in 2D block)</span>
+    <div class="formula-name">KLT vs DCT</div>
+    <span class="formula">KLT: data-dependent, optimal, slow
+DCT: fixed basis, near-optimal, fast
+DCT ≈ KLT for Markov-1, ρ≈0.9</span>
+  </div>
+</div>
+
+</div>
+
+<button class="ask-btn" onclick="sendPrompt('Quiz me on the ISP formulas — give me 8 rapid fill-in-the-blank questions, one formula at a time, and tell me if I am right')">Test me on these formulas ↗</button>
+
+</div>
+
+<script>
+function filter(cat, el) {
+  document.querySelectorAll('.ftag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.card').forEach(c => {
+    if (cat === 'all') { c.classList.remove('hidden'); return; }
+    const cats = c.dataset.cat || '';
+    c.classList.toggle('hidden', !cats.split(' ').includes(cat));
+  });
+}
+</script>
