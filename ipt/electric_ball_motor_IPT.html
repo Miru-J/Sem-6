@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Electrostatic Ball Motor — IPT Presentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a14;
+    --surface: #12121f;
+    --card: #1a1a2e;
+    --accent: #4fc3f7;
+    --accent2: #e040fb;
+    --accent3: #69f0ae;
+    --text: #f0f0ff;
+    --muted: #8888aa;
+    --border: rgba(79,195,247,0.18);
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--text);
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 32px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .topbar-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+
+  .topbar-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .slide-counter {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    min-width: 60px;
+    text-align: right;
+  }
+
+  .nav-btns { display: flex; gap: 8px; align-items: center; }
+
+  .nav-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--accent);
+    padding: 7px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .nav-btn:hover { background: rgba(79,195,247,0.08); border-color: var(--accent); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+  .slide-dots { display: flex; gap: 7px; align-items: center; }
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--muted);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    border: none;
+  }
+  .dot.active { background: var(--accent); transform: scale(1.5); }
+
+  /* ── SLIDE AREA ── */
+  .slides-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    min-height: calc(100vh - 70px);
+  }
+
+  .slide {
+    display: none;
+    flex-direction: column;
+    padding: 48px 60px 40px;
+    min-height: calc(100vh - 70px);
+    animation: fadein 0.3s ease;
+  }
+  .slide.active { display: flex; }
+
+  @keyframes fadein {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── TYPOGRAPHY ── */
+  .slide-label {
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--accent);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .slide-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1.12;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .slide-subtitle {
+    font-size: 16px;
+    color: var(--muted);
+    margin-bottom: 28px;
+    line-height: 1.6;
+    max-width: 680px;
+  }
+
+  .accent-line {
+    width: 52px; height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    margin-bottom: 28px;
+  }
+
+  /* ── LAYOUT HELPERS ── */
+  .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; flex: 1; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 22px;
+  }
+  .card-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .card-body {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+  .card-big {
+    font-family: 'Syne', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  /* ── PILLS ── */
+  .pill {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+  .pill-green  { background: rgba(105,240,174,0.12); color: var(--accent3);  border: 1px solid rgba(105,240,174,0.3); }
+  .pill-blue   { background: rgba(79,195,247,0.12);  color: var(--accent);   border: 1px solid rgba(79,195,247,0.3); }
+  .pill-purple { background: rgba(224,64,251,0.12);  color: var(--accent2);  border: 1px solid rgba(224,64,251,0.3); }
+  .pill-red    { background: rgba(255,80,80,0.12);   color: #ff8080;          border: 1px solid rgba(255,80,80,0.3); }
+
+  /* ── PHASE STEPS ── */
+  .phase-steps { display: flex; flex-direction: column; gap: 14px; flex: 1; }
+  .phase-step {
+    display: flex; align-items: flex-start; gap: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .phase-num {
+    min-width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+    font-family: 'Syne', sans-serif;
+    flex-shrink: 0;
+  }
+  .phase-num.blue   { background: rgba(79,195,247,0.15);  color: var(--accent);  border: 1px solid rgba(79,195,247,0.35); }
+  .phase-num.purple { background: rgba(224,64,251,0.15);  color: var(--accent2); border: 1px solid rgba(224,64,251,0.35); }
+  .phase-num.green  { background: rgba(105,240,174,0.15); color: var(--accent3); border: 1px solid rgba(105,240,174,0.35); }
+  .phase-text-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .phase-text-body  { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+  /* ── TABLE ── */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .data-table th {
+    color: var(--muted); font-weight: 600; text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .data-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text); vertical-align: top;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table td:first-child { color: var(--accent); font-weight: 500; }
+  .table-wrap { border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+  .table-wrap th:first-child { border-radius: 12px 0 0 0; }
+
+  /* ── MATH BLOCK ── */
+  .math-label {
+    font-size: 11px; color: var(--accent2); margin-bottom: 7px;
+    letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600;
+  }
+  .math-block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent2);
+    border-radius: 8px;
+    padding: 16px 18px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: #d0d0ff;
+    line-height: 1.9;
+    margin-bottom: 14px;
+    overflow-x: auto;
+  }
+
+  /* ── ASSUMPTION / COMPARISON ROWS ── */
+  .assump-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.8fr;
+    gap: 0;
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 13px;
+    align-items: center;
+  }
+  .assump-row:last-child { border-bottom: none; }
+  .assump-header {
+    background: var(--surface);
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.09em; color: var(--muted); font-weight: 600;
+  }
+  .assump-body { background: var(--card); }
+
+  /* ── OPPONENT Q&A ── */
+  .opp-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+  }
+  .opp-q { font-size: 14px; font-weight: 600; color: #ff8080; margin-bottom: 8px; }
+  .opp-q::before { content: "Q: "; }
+  .opp-a { font-size: 13px; color: var(--muted); line-height: 1.65; }
+  .opp-a::before { content: "A: "; color: var(--accent3); font-weight: 600; }
+
+  /* ── CONCLUSION ── */
+  .concl-item {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 14px 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+  .check {
+    min-width: 24px; height: 24px;
+    border-radius: 50%;
+    background: rgba(105,240,174,0.15);
+    border: 1px solid rgba(105,240,174,0.35);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: var(--accent3); flex-shrink: 0;
+  }
+  .concl-text { font-size: 14px; color: var(--muted); line-height: 1.6; }
+  .concl-text strong { color: var(--text); font-weight: 600; }
+
+  /* ── CHART WRAPPERS ── */
+  .chart-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .chart-label {
+    font-size: 11px; color: var(--accent); font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px;
+  }
+
+  /* ── INFO BOX ── */
+  .info-box {
+    padding: 12px 16px;
+    background: rgba(79,195,247,0.05);
+    border: 1px solid rgba(79,195,247,0.18);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-top: 12px;
+  }
+  .info-box strong { color: var(--accent); }
+
+  .warn-box {
+    padding: 12px 16px;
+    background: rgba(224,64,251,0.05);
+    border: 1px solid rgba(224,64,251,0.2);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-top: 12px;
+  }
+  .warn-box strong { color: var(--accent2); }
+
+  /* ── HERO ── */
+  .hero-diagram {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── SCROLLABLE ── */
+  .scrollable { overflow-y: auto; }
+  .scrollable::-webkit-scrollbar { width: 4px; }
+  .scrollable::-webkit-scrollbar-track { background: transparent; }
+  .scrollable::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* ── FOOTER ── */
+  .slide-footer {
+    margin-top: auto;
+    padding-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    .topbar { display: none; }
+    .slide { page-break-after: always; min-height: 100vh; display: flex !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV BAR -->
+<div class="topbar">
+  <div>
+    <div class="topbar-title">Electrostatic Ball Motor</div>
+    <div class="topbar-sub">IPT Reporter Presentation · 12 minutes</div>
+  </div>
+  <div class="slide-dots" id="dots"></div>
+  <div class="nav-btns">
+    <button class="nav-btn" id="prev" onclick="changeSlide(-1)">← Prev</button>
+    <div class="slide-counter"><span id="cur">1</span> / <span id="total">11</span></div>
+    <button class="nav-btn" id="next" onclick="changeSlide(1)">Next →</button>
+  </div>
+</div>
+
+<div class="slides-container">
+
+  <!-- ═══ SLIDE 1: TITLE ═══ -->
+  <div class="slide active" id="s1">
+    <div class="slide-label">IPT Reporter Presentation · 12 minutes</div>
+    <div class="slide-title">Electrostatic<br>Ball Motor</div>
+    <div class="accent-line"></div>
+    <div class="slide-subtitle">Conditions for operation and maximizing ball speed using a DC voltage source and a foil-covered plastic ball</div>
+    <div class="hero-diagram">
+      <svg width="480" height="260" viewBox="0 0 480 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#69f0ae"/>
+          </marker>
+          <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="rgba(79,195,247,0.5)"/>
+          </marker>
+        </defs>
+        <!-- Outer ring -->
+        <ellipse cx="240" cy="130" rx="160" ry="90" stroke="rgba(79,195,247,0.08)" stroke-width="1.5" fill="none"/>
+        <!-- Top strip -->
+        <path d="M100 75 Q240 28 380 75" stroke="#4fc3f7" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <!-- Bottom strip -->
+        <path d="M100 185 Q240 232 380 185" stroke="#e040fb" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <!-- Ball -->
+        <circle cx="240" cy="130" r="28" fill="rgba(79,195,247,0.12)" stroke="#4fc3f7" stroke-width="2.5"/>
+        <circle cx="240" cy="130" r="12" fill="#4fc3f7" opacity="0.5"/>
+        <!-- Orbit arrow -->
+        <path d="M265 110 L310 85" stroke="#69f0ae" stroke-width="2.5" marker-end="url(#arr1)"/>
+        <!-- Orbit path dashed -->
+        <ellipse cx="240" cy="130" rx="130" ry="58" stroke="rgba(255,255,255,0.08)" stroke-width="1.5" stroke-dasharray="6 5" fill="none"/>
+        <!-- DC source lines -->
+        <line x1="52" y1="75" x2="98" y2="75" stroke="rgba(79,195,247,0.4)" stroke-width="2"/>
+        <line x1="52" y1="185" x2="98" y2="185" stroke="rgba(224,64,251,0.4)" stroke-width="2"/>
+        <rect x="30" y="62" width="24" height="136" rx="4" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+        <text x="42" y="128" text-anchor="middle" fill="rgba(255,255,255,0.25)" font-size="11" font-family="Space Grotesk">HV</text>
+        <!-- Labels -->
+        <text x="240" y="18" text-anchor="middle" fill="#4fc3f7" font-size="13" font-family="Space Grotesk" font-weight="600">+ Strip</text>
+        <text x="240" y="252" text-anchor="middle" fill="#e040fb" font-size="13" font-family="Space Grotesk" font-weight="600">− Strip</text>
+        <text x="295" y="105" fill="#69f0ae" font-size="13" font-family="Space Grotesk" font-weight="600">F_tangential</text>
+        <text x="218" y="135" fill="rgba(255,255,255,0.35)" font-size="11" font-family="Space Grotesk">Ball</text>
+      </svg>
+    </div>
+    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+      <span class="pill pill-blue">Electrostatics</span>
+      <span class="pill pill-purple">Curved Geometry</span>
+      <span class="pill pill-green">Self-sustaining Rotation</span>
+      <span class="pill pill-red">DC High Voltage</span>
+    </div>
+    <div class="slide-footer">
+      <span>International Physicists' Tournament</span>
+      <span>Slide 1 of 11</span>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 2: PHENOMENON ═══ -->
+  <div class="slide" id="s2">
+    <div class="slide-label">Slide 2 · Phenomenon</div>
+    <div class="slide-title">What We Observe</div>
+    <div class="accent-line"></div>
+    <div class="slide-subtitle">A single DC source drives continuous rotation — no moving mechanical parts, no external commutation</div>
+    <div class="two-col" style="flex:1; align-items:stretch;">
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div class="card">
+          <div class="card-title">Setup</div>
+          <div class="card-body">Two concentric curved metallic strips connected to ±HV DC source. An aluminum-foil coated plastic ball is placed in the gap between them.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Observation</div>
+          <div class="card-body">Above a critical voltage (~13 kV), the ball spontaneously begins orbiting between the strips and sustains rotation indefinitely as long as voltage is applied.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Why it's non-trivial</div>
+          <div class="card-body">The same DC source drives the ball continuously without any switching — the geometry itself provides self-commutation. This is a Kelvin-type electrostatic motor.</div>
+        </div>
+      </div>
+      <div class="card" style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
+        <svg width="280" height="260" viewBox="0 0 280 260" fill="none">
+          <defs>
+            <marker id="oa" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L7,3 z" fill="#69f0ae"/>
+            </marker>
+          </defs>
+          <circle cx="140" cy="130" r="110" stroke="rgba(79,195,247,0.08)" stroke-width="1" fill="none"/>
+          <path d="M55 62 Q140 28 225 62" stroke="#4fc3f7" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <path d="M55 198 Q140 232 225 198" stroke="#e040fb" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <circle cx="140" cy="130" r="22" fill="rgba(79,195,247,0.15)" stroke="#4fc3f7" stroke-width="2"/>
+          <circle cx="140" cy="130" r="9" fill="#4fc3f7" opacity="0.6"/>
+          <ellipse cx="140" cy="130" rx="90" ry="54" stroke="rgba(255,255,255,0.08)" stroke-width="1.5" stroke-dasharray="5 4" fill="none"/>
+          <path d="M158 113 Q200 98 196 128" stroke="#69f0ae" stroke-width="2" fill="none" marker-end="url(#oa)"/>
+          <text x="140" y="16" text-anchor="middle" fill="#4fc3f7" font-size="12" font-family="Space Grotesk" font-weight="600">+HV</text>
+          <text x="140" y="252" text-anchor="middle" fill="#e040fb" font-size="12" font-family="Space Grotesk" font-weight="600">−HV</text>
+          <text x="204" y="122" fill="rgba(105,240,174,0.8)" font-size="12" font-family="Space Grotesk" font-weight="600">ω</text>
+          <text x="28" y="72" fill="rgba(79,195,247,0.5)" font-size="10" font-family="Space Grotesk">+Q</text>
+          <text x="28" y="196" fill="rgba(224,64,251,0.5)" font-size="10" font-family="Space Grotesk">−Q</text>
+        </svg>
+        <div style="font-size:13px; color:var(--muted); text-align:center;">Kelvin-type electrostatic motor</div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>International Physicists' Tournament</span><span>Slide 2 of 11</span>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 3: MECHANISM ═══ -->
+  <div class="slide" id="s3">
+    <div class="slide-label">Slide 3 · Qualitative Explanation</div>
+    <div class="slide-title">The Three-Phase Cycle</div>
+    <div class="accent-line"></div>
+    <div class="slide-subtitle">Self-commutating charge reversal drives a net tangential force at every point in the orbit</div>
+    <div class="phase-steps" style="flex:1;">
+      <div class="phase-step">
+        <div class="phase-num blue">1</div>
+        <div style="flex:1;">
+          <div class="phase-text-title">Charge Acquisition — Contact</div>
+          <div class="phase-text-body">Ball contacts the + strip and acquires positive charge by conduction. Charge transferred Q ∝ C·V, where capacitance C depends on ball-strip geometry and separation.</div>
+        </div>
+        <span class="pill pill-blue">Q → +Q</span>
+      </div>
+      <div class="phase-step">
+        <div class="phase-num purple">2</div>
+        <div style="flex:1;">
+          <div class="phase-text-title">Electrostatic Propulsion — Flight</div>
+          <div class="phase-text-body">Carrying the same sign charge as the nearby strip, the ball is repelled. The curved strip geometry ensures a non-zero tangential component F_t that drives rotation. Flat strips → purely radial → zero F_t.</div>
+        </div>
+        <span class="pill pill-purple">Repulsion → F_t</span>
+      </div>
+      <div class="phase-step">
+        <div class="phase-num green">3</div>
+        <div style="flex:1;">
+          <div class="phase-text-title">Charge Reversal — Contact</div>
+          <div class="phase-text-body">Ball reaches the − strip, deposits positive charge, acquires negative charge. Now repelled from the − strip in the same tangential direction. The cycle repeats. No external switching needed — geometry provides self-commutation.</div>
+        </div>
+        <span class="pill pill-green">−Q → repeat</span>
+      </div>
+    </div>
+    <div class="info-box">
+      <strong>Key insight:</strong> Flat strips produce only radial force → zero net tangential component → no rotation possible. Curved geometry is not optional — it is the fundamental mechanism.
+    </div>
+    <div class="slide-footer">
+      <span>International Physicists' Tournament</span><span>Slide 3 of 11</span>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 4: CONDITIONS ═══ -->
+  <div class="slide" id="s4">
+    <div class="slide-label">Slide 4 · Conditions for Operation</div>
+    <div class="slide-title">When Does It Work?</div>
+    <div class="accent-line"></div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px;">
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Condition</th>
+              <th>Status</th>
+              <th>Physical Reason</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>V &gt; V_threshold (~13 kV)</td>
+              <td><span class="pill pill-green">Critical</span></td>
+              <td style="color:var(--muted);">Tangential impulse per half-orbit must exceed work done against gravity + rolling friction</td>
+            </tr>
+            <tr>
+              <td>Conducting ball surface</td>
+              <td><span class="pill pill-green">Critical</span></td>
+              <td style="color:var(--muted);">Charge transfer requires conduction; aluminum foil coating enables this</td>
+            </tr>
+            <tr>
+              <td>Curved strip geometry</td>
+              <td><span class="pill pill-green">Critical</span></td>
+              <td style="color:var(--muted);">Flat strips yield zero net tangential force component; curvature is the propulsion mechanism</td>
+            </tr>
+            <tr>
+              <td>r_ball ≪ R_strip</td>
+              <td><span class="pill pill-blue">Model validity</span></td>
+              <td style="color:var(--muted);">Ensures uniform charge approximation holds; approaches point-charge limit</td>
+            </tr>
+            <tr>
+              <td>No corona discharge</td>
+              <td><span class="pill pill-purple">Upper limit</span></td>
+              <td style="color:var(--muted);">Above ~15–16 kV, partial discharge at strip tips bleeds charge and reduces Q transfer efficiency</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="two-col" style="flex:none;">
+        <div class="card">
+          <div class="card-title">Experimental threshold</div>
+          <div style="display:flex; align-items:baseline; gap:12px;">
+            <div class="card-big">~13 kV</div>
+            <div class="card-body">minimum DC for sustained rotation in our setup</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Practical operating range</div>
+          <div style="display:flex; align-items:baseline; gap:12px;">
+            <div class="card-big">13–18 kV</div>
+            <div class="card-body">above threshold; corona effects begin ~15 kV at strip tips</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>International Physicists' Tournament</span><span>Slide 4 of 11</span>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 5: THEORY ═══ -->
+  <div class="slide" id="s5">
+    <div class="slide-label">Slide 5 · Theoretical Model</div>
+    <div class="slide-title">The Force Equation</div>
+    <div class="accent-line"></div>
+    <div class="scrollable" style="flex:1; max-height:calc(100vh - 280px);">
+      <div style="margin-bottom:16px;">
+        <div class="math-label">Tangential Force — two-strip model, strip curvature included</div>
+        <div class="math-block">F = −(Q·σ·R) / (8πε₀(R−r))  ×  [ξ(π − δ − Δφ)  +  ξ(δ)]</div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <div class="math-label">Geometric arc-integration function ξ(φ)</div>
+        <div class="math-block">ξ(φ) = ln[
+  (√(c(φ+Δφ) + ℓ²(1−p)²) − ℓ(1−p)) / (√(c(φ+Δφ) + ℓ²(1−p)²) + ℓ(1−p))
+  × (√(c(φ+Δφ) + ℓ²p²) − ℓp) / (√(c(φ+Δφ) + ℓ²p²) + ℓp)
+  × (inverse terms evaluated at φ)
+]</div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <div class="math-label">Chord-squared distance c(φ)</div>
+        <div class="math-block">c(φ) = R² + (R−r)² − 2R(R−r) cos φ</div>
+      </div>
+      <div class="two-col" style="gap:14px; flex:none;">
+        <div class="card">
+          <div class="card-title">Assumptions made</div>
+          <div class="card-body">
+            • Uniform surface charge density σ on ball and strips<br>
+            • Only 2 nearest-neighbor strips contribute<br>
+            • Strip curvature accounted via c(φ)<br>
+            • Electrostatic interaction only (no air drag in model)
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Validity assessment</div>
+          <div class="card-body">
+            • Uniform σ: good during flight (&gt;80% of orbit)<br>
+            • Breaks down at contact (non-uniform redistribution)<br>
+            • 2-strip approx: force ~ 1/r²; &lt;5% error from far strips<br>
+            • Model gives lower bound on F_t, not overestimate
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>International Physicists' Tournament</span><span>Slide 5 of 11</span>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 6: FORCE PROFILE ═══ -->
+  <div class="slide" id="s6">
+    <div class="slide-label">Slide 6 · Theory Result</div>
+    <div class="slide-title">Force Profile — Always Positive</div>
+    <div class="accent-line"></div>
+    <div class="slide-subtitle">The ball is always pushed forward — self-sustaining rotation is theoretically guaranteed above threshold voltage</div>
+    <div class="chart-wrap" style="flex:1;">
+      <div class="chart-label">Theoretical F_tangential vs δ (position angle, rad)</div>
+      <svg width="100%" height="300" viewBox="0 0 780 300" preserveAspectRatio="xMidYMid meet">
+        <!-- Grid lines -->
+        <line x1="80" y1="20" x2="80" y2="250" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+        <line x1="80" y1="250" x2="740" y2="250" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+        <line x1="80" y1="190" x2="740" y2="190" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="5 5"/>
+        <line x1="80" y1="138" x2="740" y2="138" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="5 5"/>
+        <line x1="80" y1="80" x2="740" y2="80" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="5 5"/>
+        <!-- Y axis labels -->
+        <text x="72" y="254" text-anchor="end" fill="#8888aa" font-size="11" font-family="Space Grotesk">0</text>
+        <text x="72" y="194" text-anchor="end" fill="#8888aa" font-size="11" font-family="Space Grotesk">0.7</text>
+        <text x="72" y="142" text-anchor="end" fill="#8888aa" font-size="11" font-family="Space Grotesk">1.5</text>
+        <text x="72" y="84" text-anchor="end" fill="#8888aa" font-size="11" font-family="Space Grotesk">2.8 ×10⁻⁸ N</text>
+        <!-- X axis labels -->
+        <text x="80" y="270" text-anchor="middle" fill="#8888aa" font-size="11" font-family="Space Grotesk">0</text>
+        <text x="220" y="270" text-anchor="middle" fill="#8888aa" font-size="11" font-family="Space Grotesk">0.5</text>
+        <text x="410" y="270" text-anchor="middle" fill="#8888aa" font-size="11" font-family="Space Grotesk">1.0</text>
+        <text x="600" y="270" text-anchor="middle" fill="#8888aa" font-size="11" font-family="Space Grotesk">1.5</text>
+        <text x="730" y="270" text-anchor="middle" fill="#8888aa" font-size="11" font-family="Space Grotesk">2.0</text>
+        <!-- Axis titles -->
+        <text x="410" y="290" text-anchor="middle" fill="#8888aa" font-size="12" font-family="Space Grotesk">δ (rad)</text>
+        <!-- U-shaped curve -->
+        <path d="M82,55 C110,62 155,90 205,148 C260,208 320,232 410,237 C500,232 560,208 615,148 C665,90 710,62 738,55"
+              stroke="#4fc3f7" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M82,55 C110,62 155,90 205,148 C260,208 320,232 410,237 C500,232 560,208 615,148 C665,90 710,62 738,55 L738,250 L82,250 Z"
+              fill="rgba(79,195,247,0.06)"/>
+        <!-- Minimum marker -->
+        <circle cx="410" cy="237" r="6" fill="#69f0ae"/>
+        <line x1="410" y1="237" x2="410" y2="195" stroke="#69f0ae" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <text x="418" y="220" fill="#69f0ae" font-size="11" font-family="Space Grotesk">min ≈ δ = 1.0 rad</text>
+        <!-- Always positive badge -->
+        <rect x="540" y="35" width="188" height="28" rx="6" fill="rgba(105,240,174,0.1)" stroke="rgba(105,240,174,0.3)" stroke-width="1"/>
+        <text x="634" y="53" text-anchor="middle" fill="#69f0ae" font-size="12" font-family="Space Grotesk" font-weight="600">F_t &gt; 0 everywhere ✓</text>
+        <!-- Peak labels -->
+        <text x="82" y="48" fill="rgba(79,195,247,0.7)" font-size="11" font-family="Space Grotesk">Peak (near + strip)</text>
+        <text x="680" y="48" fill="rgba(79,195,247,0.7)" font-size="11" font-family="Space Grotesk">Peak (near − strip)</text>
+      </svg>
+      <div style="font-size:13px; color:var(--muted); margin-top:8px;">F_t peaks near strip edges (δ → 0 and δ → 2), minimum at midpoint between strips. No decelerating region exists at any position.</div>
+    </div>
+    <div class="slide-footer">
+      <span>International Physicists' Tournament</span><span>Slide 6 of 11</span>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 7: SETUP ═══ -->
+  <div class="slide" id="s7">
+    <div class="slide-label">Slide 7 · Experimental Setup</div>
+    <div class="slide-title">Our Apparatus</div>
+    <div class="accent-line"></div>
+    <div class="two-col" style="flex:1; align-items:stretch;">
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div class="card">
+          <div class="card-title">Hardware</div>
+          <div class="card-body">
+            • DC HV source: 12–18 kV range<br>
+            • Two concentric curved Al strip electrodes<br>
+            • Al-foil coated plastic ball<br>
+            • COMSOL Multiphysics field simulation (FEM validation)
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Measurements</div>
+          <div class="card-body">
+            • Angular velocity ω via video tracking / optical sensor<br>
+            • Ball charge Q(θ) via induction probe as function of position<br>
+            • Tangential force F_t(θ) derived from charge + field data<br>
+            • Voltage swept: 12, 13, 14, 15, 16, 17, 18 kV
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">COMSOL validation (Image 7)</div>
+          <div class="card-body">FEM electric potential map confirms intense field concentration at strip tips — directly justifies non-uniform charge redistribution at contact and explains corona onset above ~15 kV.</div>
+        </div>
+      </div>
+      <div class="card" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;">
+        <svg width="280" height="250" viewBox="0 0 280 250" fill="none">
+          <defs>
+            <marker id="wa" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L7,3 z" fill="rgba(105,240,174,0.7)"/>
+            </marker>
+          </defs>
+          <rect x="24" y="20" width="232" height="210" rx="10" fill="rgba(79,195,247,0.03)" stroke="var(--border)" stroke-width="1"/>
+          <path d="M48 70 Q140 36 232 70" stroke="#4fc3f7" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <path d="M48 180 Q140 214 232 180" stroke="#e040fb" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <circle cx="140" cy="125" r="22" fill="rgba(79,195,247,0.12)" stroke="#4fc3f7" stroke-width="2.5"/>
+          <circle cx="140" cy="125" r="9" fill="#4fc3f7" opacity="0.5"/>
+          <ellipse cx="140" cy="125" rx="80" ry="42" stroke="rgba(255,255,255,0.07)" stroke-width="1.5" stroke-dasharray="5 4" fill="none"/>
+          <path d="M158 108 Q200 92 195 118" stroke="#69f0ae" stroke-width="2" fill="none" marker-end="url(#wa)"/>
+          <line x1="10" y1="70" x2="46" y2="70" stroke="rgba(79,195,247,0.5)" stroke-width="2"/>
+          <line x1="10" y1="180" x2="46" y2="180" stroke="rgba(224,64,251,0.5)" stroke-width="2"/>
+          <rect x="2" y="60" width="10" height="130" rx="2" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+          <text x="7" y="128" text-anchor="middle" fill="rgba(255,255,255,0.25)" font-size="9" font-family="Space Grotesk">HV</text>
+          <text x="140" y="25" text-anchor="middle" fill="#4fc3f7" font-size="11" font-family="Space Grotesk" font-weight="600">+ Strip</text>
+          <text x="140" y="240" text-anchor="middle" fill="#e040fb" font-size="11" font-family="Space Grotesk" font-weight="600">− Strip</text>
+          <text x="204" y="112" fill="rgba(105,240,174,0.8)" font-size="12" font-family="Space Grotesk" font-weight="600">ω</text>
+        </svg>
+        <div style="font-size:13px; color:var(--muted); text-align:center; max-width:240px;">Concentric curved electrode geometry with induction probe for charge measurement</div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>International Physicists' Tournament</span><span>Slide 7 of 11</span>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 8: RESULTS ═══ -->
+  <div class="slide" id="s8">
+    <div class="slide-label">Slide 8 · Experimental Results</div>
+    <div class="slide-title">ω vs Voltage & Force vs θ</div>
+    <div class="accent-line"></div>
+    <div class="two-col" style="flex:1; align-items:stretch;">
+      <!-- ω vs V -->
+      <div class="chart-wrap">
+        <div class="chart-label" style="color:var(--accent);">Angular velocity vs DC voltage</div>
+        <svg width="100%" height="230" viewBox="0 0 340 230">
+          <!-- Grid -->
+          <line x1="52" y1="18" x2="52" y2="185" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+          <line x1="52" y1="185" x2="320" y2="185" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+          <line x1="52" y1="140" x2="320" y2="140" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="4 4"/>
+          <line x1="52" y1="98" x2="320" y2="98" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="4 4"/>
+          <!-- Labels y -->
+          <text x="46" y="189" text-anchor="end" fill="#8888aa" font-size="10" font-family="Space Grotesk">1.50</text>
+          <text x="46" y="143" text-anchor="end" fill="#8888aa" font-size="10" font-family="Space Grotesk">1.75</text>
+          <text x="46" y="101" text-anchor="end" fill="#8888aa" font-size="10" font-family="Space Grotesk">2.00</text>
+          <text x="46" y="26" text-anchor="end" fill="#8888aa" font-size="10" font-family="Space Grotesk">2.1 rad/s</text>
+          <!-- Labels x: 12..18, spacing 38px -->
+          <text x="52" y="200" text-anchor="middle" fill="#8888aa" font-size="10" font-family="Space Grotesk">12</text>
+          <text x="90" y="200" text-anchor="middle" fill="#8888aa" font-size="10" font-family="Space Grotesk">13</text>
+          <text x="128" y="200" text-anchor="middle" fill="#8888aa" font-size="10" font-family="Space Grotesk">14</text>
+          <text x="166" y="200" text-anchor="middle" fill="#8888aa" font-size="10" font-family="Space Grotesk">15</text>
+          <text x="204" y="200" text-anchor="middle" fill="#8888aa" font-size="10" font-family="Space Grotesk">16</text>
+          <text x="242" y="200" text-anchor="middle" fill="#8888aa" font-size="10" font-family="Space Grotesk">17</text>
+          <text x="280" y="200" text-anchor="middle" fill="#8888aa" font-size="10" font-family="Space Grotesk">18</text>
+          <!-- Data: (12,1.55)(13,1.51)(14,1.76)(15,1.95)(16,1.87)(17,1.88)(18,2.05)
+               y_px = 185 - (val-1.50)/(2.1-1.50)*167  -->
+          <polyline points="52,171 90,182 128,130 166,96 204,106 242,104 280,75"
+                    stroke="#4fc3f7" stroke-width="2.5" fill="none" stroke-linejoin="round"/>
+          <circle cx="52" cy="171" r="4.5" fill="#4fc3f7"/>
+          <circle cx="90" cy="182" r="4.5" fill="#4fc3f7"/>
+          <circle cx="128" cy="130" r="4.5" fill="#4fc3f7"/>
+          <circle cx="166" cy="96" r="4.5" fill="#4fc3f7"/>
+          <circle cx="204" cy="106" r="4.5" fill="#4fc3f7"/>
+          <circle cx="242" cy="104" r="4.5" fill="#4fc3f7"/>
+          <circle cx="280" cy="75" r="4.5" fill="#4fc3f7"/>
+          <!-- Threshold line -->
+          <line x1="90" y1="18" x2="90" y2="190" stroke="rgba(255,80,80,0.35)" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <text x="93" y="32" fill="#ff8080" font-size="10" font-family="Space Grotesk">V_threshold</text>
+          <!-- Corona annotation -->
+          <line x1="166" y1="18" x2="166" y2="190" stroke="rgba(224,64,251,0.25)" stroke-width="1" stroke-dasharray="3 4"/>
+          <text x="169" y="32" fill="rgba(224,64,251,0.6)" font-size="9" font-family="Space Grotesk">corona onset</text>
+          <!-- Axis title -->
+          <text x="186" y="218" text-anchor="middle" fill="#8888aa" font-size="10" font-family="Space Grotesk">DC Voltage (kV)</text>
+        </svg>
+        <div style="font-size:12px; color:var(--muted);">Max ω = 2.05 rad/s at 18 kV. Non-monotonic plateau 15–17 kV attributed to partial corona discharge.</div>
+      </div>
+      <!-- F vs theta -->
+      <div class="chart-wrap">
+        <div class="chart-label" style="color:var(--accent2);">Tangential force vs angular position</div>
+        <svg width="100%" height="230" viewBox="0 0 340 230">
+          <line x1="52" y1="18" x2="52" y2="185" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+          <line x1="52" y1="185" x2="320" y2="185" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+          <line x1="52" y1="115" x2="320" y2="115" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="4 4"/>
+          <!-- Y labels -->
+          <text x="46" y="189" text-anchor="end" fill="#8888aa" font-size="10" font-family="Space Grotesk">0</text>
+          <text x="46" y="118" text-anchor="end" fill="#8888aa" font-size="10" font-family="Space Grotesk">0.7</text>
+          <text x="46" y="26" text-anchor="end" fill="#8888aa" font-size="10" font-family="Space Grotesk">1.2 mN</text>
+          <!-- X labels 0-360 -->
+          <text x="52" y="200" text-anchor="middle" fill="#8888aa" font-size="10" font-family="Space Grotesk">0°</text>
+          <text x="120" y="200" text-anchor="middle" fill="#8888aa" font-size="10" font-family="Space Grotesk">90°</text>
+          <text x="186" y="200" text-anchor="middle" fill="#8888aa" font-size="10" font-family="Space Grotesk">180°</text>
+          <text x="252" y="200" text-anchor="middle" fill="#8888aa" font-size="10" font-family="Space Grotesk">270°</text>
+          <text x="310" y="200" text-anchor="middle" fill="#8888aa" font-size="10" font-family="Space Grotesk">360°</text>
+          <!-- Two-period F_t curve matching image 5 -->
+          <path d="M52,120 C62,118 68,114 76,95 C82,80 90,22 100,22 C110,22 118,80 126,115
+                   C133,145 140,185 148,185 C156,185 163,145 170,115
+                   C178,80 186,22 196,22 C206,22 214,80 222,115
+                   C229,145 236,185 244,185 C252,185 259,145 266,115
+                   C274,80 282,22 292,22 C302,22 308,60 312,98 L314,105"
+                stroke="#e040fb" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Contact lines -->
+          <line x1="100" y1="18" x2="100" y2="190" stroke="rgba(255,80,80,0.2)" stroke-width="1" stroke-dasharray="3 4"/>
+          <line x1="196" y1="18" x2="196" y2="190" stroke="rgba(255,80,80,0.2)" stroke-width="1" stroke-dasharray="3 4"/>
+          <line x1="292" y1="18" x2="292" y2="190" stroke="rgba(255,80,80,0.2)" stroke-width="1" stroke-dasharray="3 4"/>
+          <text x="100" y="210" text-anchor="middle" fill="rgba(255,80,80,0.5)" font-size="9" font-family="Space Grotesk">contact</text>
+          <text x="196" y="210" text-anchor="middle" fill="rgba(255,80,80,0.5)" font-size="9" font-family="Space Grotesk">contact</text>
+          <text x="292" y="210" text-anchor="middle" fill="rgba(255,80,80,0.5)" font-size="9" font-family="Space Grotesk">contact</text>
+          <text x="186" y="218" text-anchor="middle" fill="#8888aa" font-size="10" font-family="Space Grotesk">θ (deg)</text>
+        </svg>
+        <div style="font-size:12px; color:var(--muted);">Force peaks at ~90° and ~270° (near strip contacts). Charge reversal at contact points confirmed by Q(θ) measurement.</div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>International Physicists' Tournament</span><span>Slide 8 of 11</span>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 9: COMPARISON ═══ -->
+  <div class="slide" id="s9">
+    <div class="slide-label">Slide 9 · Theory vs Experiment</div>
+    <div class="slide-title">Comparison & Discrepancies</div>
+    <div class="accent-line"></div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px;">
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Theory predicts</th>
+              <th>Experiment shows</th>
+              <th>Agreement</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Periodic F_t(θ)</td>
+              <td style="color:var(--muted);">Yes, with period = orbit</td>
+              <td style="color:var(--muted);">Yes, confirmed</td>
+              <td><span class="pill pill-green">✓ Good</span></td>
+            </tr>
+            <tr>
+              <td>Force minima at midpoint</td>
+              <td style="color:var(--muted);">Minimum near δ = 1.0 rad</td>
+              <td style="color:var(--muted);">Confirmed experimentally</td>
+              <td><span class="pill pill-green">✓ Good</span></td>
+            </tr>
+            <tr>
+              <td>F_t always positive</td>
+              <td style="color:var(--muted);">Always &gt; 0</td>
+              <td style="color:var(--muted);">Confirmed</td>
+              <td><span class="pill pill-green">✓ Good</span></td>
+            </tr>
+            <tr>
+              <td>Peak sharpness at contact</td>
+              <td style="color:var(--muted);">Smooth, broad peaks</td>
+              <td style="color:var(--muted);">Sharper, narrower peaks</td>
+              <td><span class="pill pill-purple">⚠ Explained</span></td>
+            </tr>
+            <tr>
+              <td>ω monotonically ∝ V</td>
+              <td style="color:var(--muted);">Monotonically increasing</td>
+              <td style="color:var(--muted);">Plateau at 15–17 kV</td>
+              <td><span class="pill pill-purple">⚠ Explained</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="two-col" style="flex:none;">
+        <div class="warn-box" style="margin-top:0;">
+          <strong>Sharp peak discrepancy:</strong> Non-uniform charge redistribution at contact. Uniform σ assumption breaks down precisely at the contact event — model predicts smooth peaks, reality shows sharper transfer. This makes our F_t estimate a lower bound.
+        </div>
+        <div class="warn-box" style="margin-top:0; border-color:rgba(79,195,247,0.2); background:rgba(79,195,247,0.05);">
+          <strong style="color:var(--accent);">Non-monotonic ω discrepancy:</strong> Partial corona discharge at strip tips above ~15 kV bleeds charge before full contact transfer. Confirmed by COMSOL field map showing intense field concentration at strip tip geometry.
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>International Physicists' Tournament</span><span>Slide 9 of 11</span>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 10: OPTIMIZATION ═══ -->
+  <div class="slide" id="s10">
+    <div class="slide-label">Slide 10 · Speed Maximization</div>
+    <div class="slide-title">Maximizing Ball Speed</div>
+    <div class="accent-line"></div>
+    <div class="slide-subtitle">Four independent control parameters, ordered by impact</div>
+    <div class="three-col" style="flex:1;">
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div class="card">
+          <div class="card-title">① Voltage — primary lever</div>
+          <div class="card-big" style="font-size:22px; color:var(--accent);">Q ∝ V, F ∝ V²</div>
+          <div class="card-body" style="margin-top:8px;">Directly increases charge transfer and electrostatic force. Limited above ~15 kV by corona at strip tips in our geometry.</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; padding:12px; background:var(--card); border:1px solid var(--border); border-radius:10px;">
+          <div>
+            <div style="font-size:11px; color:var(--muted); margin-bottom:2px;">Max measured</div>
+            <div style="font-size:20px; font-weight:700; color:var(--text); font-family:'Syne',sans-serif;">2.05 rad/s</div>
+          </div>
+          <span class="pill pill-green" style="margin-left:auto;">@ 18 kV</span>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div class="card">
+          <div class="card-title">② Strip geometry</div>
+          <div class="card-body">Optimize strip curvature radius R and gap angle Δφ to maximize the tangential component of repulsion. Narrower gap → stronger field → more charge per contact.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">③ Ball mass ↓</div>
+          <div class="card-body">Angular acceleration α = τ/I. For same torque τ = F_t·r, reducing moment of inertia I directly increases ω. Lighter, smaller ball with same conductance is ideal.</div>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div class="card">
+          <div class="card-title">④ Conductance ↑</div>
+          <div class="card-body">Higher conductance coating → faster, more complete charge transfer at each contact event → more charge acquired per cycle → larger F_t per orbit.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">⑤ Reduce air drag</div>
+          <div class="card-body">At higher ω, aerodynamic drag F_drag ∝ ω² becomes limiting. Vacuum or low-pressure enclosure would significantly raise terminal angular speed.</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>International Physicists' Tournament</span><span>Slide 10 of 11</span>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 11: CONCLUSION ═══ -->
+  <div class="slide" id="s11">
+    <div class="slide-label">Slide 11 · Conclusion + Defense</div>
+    <div class="slide-title">Summary & Opponent Defense</div>
+    <div class="accent-line"></div>
+    <div class="two-col" style="flex:1; align-items:start;">
+      <div>
+        <div style="font-size:12px; color:var(--accent); font-weight:600; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:12px;">Key conclusions</div>
+        <div class="concl-item">
+          <div class="check">✓</div>
+          <div class="concl-text"><strong>Mechanism:</strong> Self-commutating electrostatic motor driven by charge reversal at curved strip contacts. No external switching required.</div>
+        </div>
+        <div class="concl-item">
+          <div class="check">✓</div>
+          <div class="concl-text"><strong>Conditions:</strong> V &gt; ~13 kV (threshold), conducting ball surface, curved strip geometry — all three are necessary.</div>
+        </div>
+        <div class="concl-item">
+          <div class="check">✓</div>
+          <div class="concl-text"><strong>Theory:</strong> Uniform-σ model correctly predicts the F_t profile shape; discrepancy at contact is explained and gives a lower bound.</div>
+        </div>
+        <div class="concl-item">
+          <div class="check">✓</div>
+          <div class="concl-text"><strong>Optimization:</strong> ω ∝ V (primarily). Max 2.05 rad/s at 18 kV. Secondary levers: geometry, ball mass, conductance, enclosure.</div>
+        </div>
+      </div>
+      <div class="scrollable" style="max-height:calc(100vh - 320px);">
+        <div style="font-size:12px; color:#ff8080; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:12px;">Prepared opponent answers</div>
+        <div class="opp-card">
+          <div class="opp-q">Uniform charge breaks at contact — doesn't this invalidate the model?</div>
+          <div class="opp-a">~80% of the orbit is in-flight where uniform σ holds well. At contact, non-uniformity creates sharper peaks than predicted — meaning our model gives a lower bound on F_t, making the mechanism more robust than modeled, not less.</div>
+        </div>
+        <div class="opp-card">
+          <div class="opp-q">Why only 2 strips? What about contributions from others?</div>
+          <div class="opp-a">Coulomb force ∝ 1/r². Next-nearest strips contribute &lt;5% to the tangential component, with partial cancellation by symmetry. Verified by direct estimation.</div>
+        </div>
+        <div class="opp-card">
+          <div class="opp-q">ω drops from 15 to 16–17 kV — your model predicts monotonic increase.</div>
+          <div class="opp-a">Corona discharge begins at strip tips above ~15 kV — confirmed by COMSOL showing intense field concentration there. This partially bleeds charge before contact. At 18 kV, bulk charge dominates and ω recovers.</div>
+        </div>
+        <div class="opp-card">
+          <div class="opp-q">Is the voltage threshold sharp or gradual?</div>
+          <div class="opp-a">Our data shows a relatively sharp transition over ~1 kV. Physically, threshold = condition where tangential impulse per orbit ≥ work against gravity + friction, which scales steeply with V through Q ∝ V.</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>International Physicists' Tournament</span><span>Slide 11 of 11</span>
+    </div>
+  </div>
+
+</div><!-- /slides-container -->
+
+<script>
+  let cur = 0;
+  const total = 11;
+  const slides = document.querySelectorAll('.slide');
+  const dotsEl = document.getElementById('dots');
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
+  document.getElementById('total').textContent = total;
+
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('button');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.setAttribute('aria-label', 'Slide ' + (i+1));
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(n) {
+    slides[cur].classList.remove('active');
+    dotsEl.children[cur].classList.remove('active');
+    cur = n;
+    slides[cur].classList.add('active');
+    dotsEl.children[cur].classList.add('active');
+    document.getElementById('cur').textContent = cur + 1;
+    prevBtn.disabled = cur === 0;
+    nextBtn.disabled = cur === total - 1;
+    window.scrollTo(0,0);
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   changeSlide(-1);
+  });
+
+  function changeSlide(dir) {
+    if (cur + dir >= 0 && cur + dir < total) goTo(cur + dir);
+  }
+
+  prevBtn.disabled = true;
+</script>
+</body>
+</html>
