@@ -1,0 +1,70 @@
+Why are complex-valued signals preferred in communication system analysis if physical signals are real?,They simplify mathematical analysis by providing a complex representation ($x(t) \rightarrow X(\omega)$).
+Under what condition is the sampling of continuous signals considered lossless?,The signal must be bandlimited.
+What type of noise is introduced into a communication system during the quantization process?,Random additive noise.
+Why is channel noise generally assumed to follow a Gaussian distribution?,It is a consequence of the Central Limit Theorem.
+"If a signal $y(t)$ is the result of convolving two signals with bandwidths $B_1$ and $B_2$, what is the upper bound of its bandwidth?","$y(t) \le \min(B_1, B_2)$."
+Formula: Energy Spectral Density (ESD),$|X(f)|^2$
+What is the primary goal of employing multiplexing techniques like TDMA or FDMA?,To ensure that transmitted signals are orthogonal to prevent interference.
+Term: CDMA,"Definition: Code Division Multiplexing, which utilizes phase differences (e.g., $\sin$ and $\cos$) for separation."
+"According to the Uncertainty Principle, why can we never achieve perfectly band-limited signals?",A signal cannot be limited in both the time domain and the frequency domain simultaneously.
+How is 90% bandwidth defined in the frequency domain?,"The range $[-a, a]$ that contains 90% of the total energy spectral density."
+What characterizes the '3dB bandwidth' of a signal or system?,The frequency range where the power drops to half of its peak value.
+Formula: Decibel (dB) power ratio,$10 \log_{10}(\frac{P_1}{P_2})$
+What is the purpose of the Paley-Wiener Criterion?,To check if a specific filter transfer function is physically realizable.
+Formula: Standard Communication System Model,$r(t) = h(t) * m(t) + n(t)$ where $r(t)$ is the receiver signal and $n(t)$ is AWGN.
+"In real-life hardware, what specific type of phase response is achievable for generated filters?",Linear phase.
+Formula: Simple Wired Channel Model,$h(t) = a_0 \delta(t - t_0)$ representing attenuation and delay.
+What phenomenon occurs in wired communication due to signal reflections from objects?,Inter-Symbol Interference (ISI).
+Why are GHz frequencies specifically used for modern wireless transmission?,"To satisfy antenna length constraints, which decrease as frequency increases."
+"In modulation, the baseband signal $M(\omega)$ is converted to a higher frequency $f_c$ through a process called _____.",Up-conversion
+How is a real signal $x(t)$ represented using its complex baseband components $m_{Re}(t)$ and $m_{Im}(t)$?,$x(t) = m_{Re}(t) \cos(2\pi f_c t) - m_{Im}(t) \sin(2\pi f_c t)$.
+Term: Passband Signal,Definition: A signal centered around a high carrier frequency that does not contain a DC component.
+"In an up-conversion circuit, what component generates the high-frequency carrier wave?",Local Oscillator (LO).
+What happens to the recovered signal if the receiver's Local Oscillator is not synchronized with the transmitter?,"A phase difference occurs, leading to a loss of orthogonality between components."
+What is the maximum theoretical efficiency ($\eta$) for a standard Double Sideband Amplitude Modulation (DSB-AM) signal?,50%.
+Formula: AM Modulation Index ($\alpha$),$\alpha = \frac{M}{A_c}$ where $M$ is the peak message value and $A_c$ is carrier amplitude.
+How does High Peak-to-Average Power Ratio (PAPR) generally affect communication system performance?,It reduces power efficiency and is considered undesirable.
+What mathematical operator is used to generate the quadrature component needed for Single Sideband (SSB) modulation?,The Hilbert Transform.
+Formula: Hilbert Transform frequency response,$H(f) = -j \text{sgn}(f)$
+"In Double Sideband Suppressed Carrier (DSB-SC), what happens to the signal at the origin ($f=0$) in the spectrum?","The carrier component is removed, leaving only the sidebands."
+Concept: QAM (Quadrature Amplitude Modulation),Definition: A technique using two independent message signals modulated onto orthogonal carriers (sine and cosine).
+"In Angle Modulation, how is Frequency Modulation (FM) distinguished from Phase Modulation (PM)?","In FM, the message signal controls the derivative of the phase (frequency deviation)."
+What receiver architecture translates the carrier frequency to a fixed Intermediate Frequency (IF)?,Superheterodyne receiver.
+Term: Image Frequency,Definition: An unwanted frequency at $f_c \pm 2f_{IF}$ that can interfere with the desired signal in heterodyne receivers.
+Formula: Carson's Rule for FM Bandwidth,$BW \approx 2(\Delta f + f_m)$ where $\Delta f$ is frequency deviation and $f_m$ is message bandwidth.
+What hardware component is typically used to demodulate FM signals by tracking phase?,Phase Locked Loop (PLL).
+Under what condition is a random process $X(t)$ considered Wide Sense Stationary (WSS)?,Its mean is constant and its auto-correlation depends only on the time difference $\tau$.
+What does the Wiener-Khinchin Theorem establish regarding a WSS process?,The Power Spectral Density (PSD) is the Fourier Transform of the auto-correlation function.
+Concept: Ergodicity,Definition: A property where the time average of a single realization equals the ensemble average of the process.
+What is the defining characteristic of a Cyclostationary process?,Its statistics (like mean and auto-correlation) vary periodically with time.
+Formula: Power Spectral Density (PSD) of AWGN,$S_n(f) = \frac{N_0}{2}$ (constant across all frequencies).
+What is the primary objective of a Matched Filter in a receiver?,To maximize the Signal-to-Noise Ratio (SNR) at the sampling instant.
+Formula: Impulse response of a Matched Filter for a signal $s(t)$,$h(t) = s^*(T - t)$
+Term: Noise Figure (F),"Definition: The ratio of the input SNR to the output SNR of a device, always $\ge 1$."
+What formula is used to calculate the total noise figure of cascaded amplifier stages?,Friis Formula.
+"In quantization, how does the Signal-to-Quantization-Noise Ratio (SQNR) change for every additional bit added to the encoder?",It increases by approximately $6$ dB.
+What is the purpose of the Lloyd-Max Optimizer in communication systems?,To determine the optimal non-uniform quantization levels for a specific signal PDF.
+Term: Companding,Definition: A process of compressing a signal before quantization and expanding it after to improve SQNR for non-uniform distributions.
+Why is Differential PCM (DPCM) more efficient than standard PCM?,"It quantizes the difference between successive correlated samples, which has lower power than the raw signal."
+What error occurs in Delta Modulation when the signal's slope exceeds the maximum possible step rate?,Slope Overload.
+What is the Nyquist Rate requirement for sampling a signal with bandwidth $B$?,$F_s > 2B$.
+"In digital communication, what filter is used to prevent frequency aliasing before sampling?",Anti-aliasing filter.
+Formula: Propagation loss in free space,$L = (\frac{4\pi d}{\lambda})^2$
+How does an increase in carrier frequency $f_c$ impact the required size of a transmitter antenna?,It allows for a smaller antenna size.
+What is the spectral shape of an 'impulse' in the frequency domain?,A flat spectrum containing all frequencies.
+"In PLL analysis, what happens if the input message has a significant DC component?",The integrator in the loop can cause the system to become unstable.
+Term: BPSK (Binary Phase Shift Keying),Definition: A digital modulation scheme where data is transmitted by shifting the phase of the carrier by $180$ degrees.
+What does a 'Circular Symmetric Complex Gaussian' distribution imply about the real and imaginary noise components?,"They are independent, identically distributed (IID) Gaussian variables."
+Concept: Bandpass Sampling,"Definition: A technique to sample a signal centered at $f_c$ with a rate lower than $2f_{max}$, provided certain overlap conditions are met."
+Formula: Signal-to-Noise Ratio (SNR),$\frac{P_{signal}}{P_{noise}}$
+What is the effect of 'Spectral Inversion' during down-conversion?,The sidebands of the signal spectrum are flipped.
+"In a Superheterodyne receiver, what is the role of the RF filter?",To reject the image frequency before it reaches the mixer.
+What type of modulation uses the formula $s(t) = A_c [1 + \alpha m(t)] \cos(2\pi f_c t)$?,Double Sideband Large Carrier (DSB-LC) or Standard AM.
+Why is Narrowband FM (NBFM) considered similar to AM?,Its bandwidth is approximately $2B$ and it contains a large carrier component.
+What is the function of a 'Vocoder' or 'VCO' in FM modulation?,It translates a voltage signal directly into a corresponding frequency shift.
+"In signal space analysis, what must be true for two signals $\psi_i(t)$ and $\psi_j(t)$ to be an orthonormal basis?",They must be orthogonal and each have unit energy.
+What is the 'Link Budget' in a communication system design?,An accounting of all gains and losses from the transmitter to the receiver to ensure a target SNR.
+"In the context of quantization, what is the 'Dynamic Range'?","The total range of amplitudes $[ -x_{max}, x_{max} ]$ that the quantizer can process."
+Which standard companding law is widely used in European digital telephony?,A-law.
+What is the primary disadvantage of using a Homodyne (Zero-IF) receiver?,It is highly sensitive to DC offsets and $1/f$ noise.
+"In random process theory, what is the relation between the cross-correlation $R_{xy}(\tau)$ and $R_{yx}(\tau)$?",$R_{xy}(\tau) = R_{yx}^*(-\tau)$.
